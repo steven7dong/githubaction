@@ -27,9 +27,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Import GPG Key
-        run: |
-          echo -e "${{ secrets.ENCRYPTION_KEY }}" | gpg --import
 
       - name: Resolve Manifest Variables
         id: resolve

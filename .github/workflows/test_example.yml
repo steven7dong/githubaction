@@ -1,0 +1,37 @@
+name: Test Example
+
+on:
+  workflow_call:
+    inputs:
+      example-name:
+        description: Name of example to test
+        type: string
+      locations:
+        description: Locations to deploy containers to
+        default: '["northeurope", "westeurope"]'
+        type: string
+      manifest-modifiers:
+        description: Modifications to environment for the manifest
+        type: string
+  workflow_dispatch:
+    inputs:
+      example-name:
+        description: Name of example to test
+        type: string
+      locations:
+        description: Locations to deploy containers to
+        default: '["northeurope", "westeurope"]'
+        type: string
+      manifest-modifiers:
+        description: Modifications to environment for the manifest
+        type: string
+
+jobs:
+
+  resolve-manifest:
+    name: Resolve Manifest Variables
+    uses: ./.github/workflows/_resolve_manifest.yml
+    secrets: inherit
+    with:
+      manifest: examples/${{ inputs.example-name }}/manifest.json
+      modifiers: ${{ inputs.manifest-modifiers }}

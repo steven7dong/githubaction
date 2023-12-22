@@ -26,7 +26,9 @@ jobs:
       # Runs a single command using the runners shell
       - name: Get Workflow ID
         id: generate-id
-        run: echo "id=$(openssl rand -hex 8 | tr -d '\n')" >> $GITHUB_OUTPUT
+        run: |
+          echo "id=$(openssl rand -hex 8 | tr -d '\n')" >> $GITHUB_OUTPUT
+          echo $GITHUB_OUTPUT
   # This workflow contains a single job called "build"
   prepare:
     # The type of runner that the job will run on

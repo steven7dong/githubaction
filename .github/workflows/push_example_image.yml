@@ -60,4 +60,4 @@ jobs:
           file: examples/key_release
           push: true
           tags: |
-            docker.io/stevendongatmsft/HelloTest:1
+            docker.io/stevendongatmsft/hellotest:1

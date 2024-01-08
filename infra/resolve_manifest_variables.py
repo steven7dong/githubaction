@@ -17,7 +17,6 @@ def resolve_manifest_variables(manifest: dict) -> dict:
                     json_str = json.dumps(value)
                     if "$" not in json_str:
                         container["env"][key] = b64encode(json_str.encode()).decode()
-
     return manifest
 
 

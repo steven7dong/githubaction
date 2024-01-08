@@ -57,7 +57,7 @@ jobs:
           DOCKERFILE_CONTEXT: examples
         with:
           context: examples
-          file: examples/key_release
+          file: examples/key_release/Dockerfile.primary
           push: true
           tags: |
             docker.io/stevendongatmsft/hellotest:1

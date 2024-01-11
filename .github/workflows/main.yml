@@ -51,6 +51,7 @@ jobs:
   resolve-image:
     name: Resolve Sidecar Image
     runs-on: ubuntu-latest
+    environment: testenv
     outputs:
       manifest-modifiers: ${{ steps.resolve-image.outputs.manifest-modifiers }}
     steps:

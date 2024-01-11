@@ -59,6 +59,7 @@ jobs:
         env:
           SIDECAR_REGISTRY: ${{ inputs.sidecar_registry }}
           KEY_RELEASE_IMAGE: ${{ inputs.key-release-image }}
+          TOPIC: ${{env.TOPIC}}
         run: |
           echo $SIDECAR_REGISTRY
           echo $TOPIC

@@ -6,11 +6,8 @@ on:
       skr-client-maa-endpoint:
         description: "Attestation endpoint"
         required: true
-        default: ""
-        type: choice
-        options: 
-          - https://dsadsa.com1
-          - https://dsadsa.com
+        default: "uisd"
+        type: string
       sidecar_registry:
         description: "The registry to get the image from"
         required: true

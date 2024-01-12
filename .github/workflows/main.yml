@@ -130,5 +130,5 @@ jobs:
           echo $SKRCLIENTAKVENDPOINT
           echo $SKRCLIENTMAAENDPOINT
           echo $SKRCLIENTKID
-          echo $KUBENETESVERSION
+          echo $KUBERNETESVERSION
           echo "manifest-modifiers=KEY_RELEASE_IMAGE=$SIDECAR_REGISTRY/$KEY_RELEASE_IMAGE" >> $GITHUB_OUTPUT

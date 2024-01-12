@@ -102,14 +102,11 @@ jobs:
         env:
           SIDECAR_REGISTRY: ${{ inputs.sidecar_registry }}
           KEY_RELEASE_IMAGE: ${{ inputs.key-release-image }}
-          TOPIC: ${{vars.TOPIC}}
-          SKRCLIENTAKVENDPOINT: ${{vars.SKRCLIENTAKVENDPOINT}}
-          SKRCLIENTKID: ${{vars.SKRCLIENTKID}}
-          SKRCLIENTMAAENDPOINT: ${{vars.SKRCLIENTMAAENDPOINT}}
+          TOPIC: ${{inputs.TOPIC}}
+          SKRCLIENTAKVENDPOINT: ${{inputs.SKRCLIENTAKVENDPOINT}}
+          SKRCLIENTKID: ${{inputs.SKRCLIENTKID}}
+          SKRCLIENTMAAENDPOINT: ${{inputs.SKRCLIENTMAAENDPOINT}}
         run: |
-          echo $SIDECAR_REGISTRY
-          echo $TOPIC
-          echo $SKRCLIENTAKVENDPOINT
           if [ -z "$SIDECAR_REGISTRY" ]; then
             SIDECAR_REGISTRY="http://mcr.microsoft.com"
           fi

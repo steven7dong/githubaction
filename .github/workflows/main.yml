@@ -3,6 +3,14 @@ name: CI
 on:
   workflow_call:
     inputs:
+      skr-client-maa-endpoint:
+        description: "Attestation endpoint"
+        required: true
+        default: ""
+        type: choice
+        options: 
+          - https://dsadsa.com1
+          - https://dsadsa.com
       sidecar_registry:
         description: "The registry to get the image from"
         required: true
@@ -13,8 +21,31 @@ on:
         required: false
         default: "aci/skr:2.7"
         type: string
+      kubernetes-version:
+        description: "Kubernetes version to use for AKS cluster creation"
+        required: true
+        default: "1.24.0"
+        type: string
+      skr-client-akv-endpoint:
+        description: "AKV endpoint for key release"
+        required: true
+        default: ""
+        type: string
+      skr-kafka-demo-topic:
+        description: "Kafka topic"
+        required: true
+        default: "demo-topic"
+        type: string  
+
   workflow_dispatch:
     inputs:
+      skr-client-maa-endpoint:
+        description: "Attestation endpoint"
+        required: true
+        type: choice
+        options: 
+          - http://mcr.microsoft.com
+          - http://confidentialsidecars.azurecr.io
       sidecar_registry:
         description: "The registry to get the image from"
         required: true
@@ -27,6 +58,21 @@ on:
         required: false
         default: "aci/skr:2.7"
         type: string
+      kubernetes-version:
+        description: "Kubernetes version to use for AKS cluster creation"
+        required: true
+        default: "1.24.0"
+        type: string
+      skr-client-akv-endpoint:
+        description: "AKV endpoint for key release"
+        required: true
+        default: ""
+        type: string
+      skr-kafka-demo-topic:
+        description: "Kafka topic"
+        required: true
+        default: "demo-topic"
+        type: string  
   push:
     branches:
       - main
@@ -51,7 +97,6 @@ jobs:
   resolve-image:
     name: Resolve Sidecar Image
     runs-on: ubuntu-latest
-    environment: testenv
     outputs:
       manifest-modifiers: ${{ steps.resolve-image.outputs.manifest-modifiers }}
     steps:
@@ -62,6 +107,8 @@ jobs:
           KEY_RELEASE_IMAGE: ${{ inputs.key-release-image }}
           TOPIC: ${{vars.TOPIC}}
           SKRCLIENTAKVENDPOINT: ${{vars.SKRCLIENTAKVENDPOINT}}
+          SKRCLIENTKID: ${{vars.SKRCLIENTKID}}
+          SKRCLIENTMAAENDPOINT: ${{vars.SKRCLIENTMAAENDPOINT}}
         run: |
           echo $SIDECAR_REGISTRY
           echo $TOPIC
@@ -72,4 +119,10 @@ jobs:
           if [ -z "$KEY_RELEASE_IMAGE" ]; then
             KEY_RELEASE_IMAGE="aci/skr:2.7"
           fi
+          echo $SIDECAR_REGISTRY
+          echo $KEY_RELEASE_IMAGE
+          echo $TOPIC
+          echo $SKRCLIENTAKVENDPOINT
+          echo $SKRCLIENTMAAENDPOINT
+          echo $SKRCLIENTKID
           echo "manifest-modifiers=KEY_RELEASE_IMAGE=$SIDECAR_REGISTRY/$KEY_RELEASE_IMAGE" >> $GITHUB_OUTPUT

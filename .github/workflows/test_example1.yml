@@ -103,6 +103,8 @@ jobs:
           echo ${{ inputs.kubernetes-version }}
           echo ${{ inputs.kafka-topic }}
           python3 infra/install-dependencies.py
+          envsubst version
+          kubectl version
           
         
         

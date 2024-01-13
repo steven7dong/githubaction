@@ -151,9 +151,26 @@ jobs:
         id: generate-id
         run: echo "id=$(openssl rand -hex 8 | tr -d '\n')" >> $GITHUB_OUTPUT
     
-      # - name: Install Dependencies 
-      #   id: install-dependencies 
-      #   uses: ./.github/workflows/install-dependencies.yml
+      - name: Install Dependencies 
+        id: install-dependencies 
+        run: |
+          result=$(az extension list -o table  2>&1 || true)
+          if [[ $result == *"aks-preview"* ]]; then
+              echo "aks-preview already installed, upgrading aks-preview version."
+              az extension update --name aks-preview
+          else
+              echo "aks-preview extension not found. Installing aks-preview..."
+              az extension add --name aks-preview
+          fi
+
+          result=$(az extension list -o table  2>&1 || true)
+          if [[ $result == *"confcom"* ]]; then
+              echo "confcom already installed, upgrading confcom version."
+              az extension update --name confcom
+          else
+              echo "confcom extension not found. Installing confcom..."
+              az extension add --name confcom
+          fi
 
   attestation:
     name: Attestation

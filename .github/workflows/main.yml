@@ -105,7 +105,10 @@ jobs:
     name: Resolve Sidecar Image
     runs-on: ubuntu-latest
     outputs:
-      manifest-modifiers: ${{ steps.resolve-image.outputs.manifest-modifiers }}
+      KEY_RELEASE_IMAGE: ${{ steps.resolve-image.outputs.KEY_RELEASE_IMAGE }}
+      sidecar-registry: ${{ steps.resolve-image.outputs.sidecar_registry }}
+      SKRCLIENTAKVENDPOINT: ${{ steps.resolve-image.outputs.SKRCLIENTAKVENDPOINT }}
+      TOPIC: ${{ steps.resolve-image.outputs.TOPIC }}
     steps:
       - name: Define Image to Use
         id: resolve-image
@@ -131,4 +134,23 @@ jobs:
           echo $SKRCLIENTMAAENDPOINT
           echo $SKRCLIENTKID
           echo $KUBERNETESVERSION
-          echo "manifest-modifiers=KEY_RELEASE_IMAGE=$SIDECAR_REGISTRY/$KEY_RELEASE_IMAGE" >> $GITHUB_OUTPUT
+
+          echo "sidecar-registry=$SIDECAR_REGISTRY" >> $GITHUB_OUTPUT
+          echo "KEY_RELEASE_IMAGE=$KEY_RELEASE_IMAGE" >> $GITHUB_OUTPUT
+          echo "TOPIC=$TOPIC" >> $GITHUB_OUTPUT
+          echo "SKRCLIENTAKVENDPOINT=$SKRCLIENTAKVENDPOINT" >> $GITHUB_OUTPUT
+          echo "SKRCLIENTMAAENDPOINT=$SKRCLIENTMAAENDPOINT" >> $GITHUB_OUTPUT
+          echo "SKRCLIENTKID=$SKRCLIENTKID" >> $GITHUB_OUTPUT
+          echo "KUBERNETESVERSION=$KUBERNETESVERSION" >> $GITHUB_OUTPUT
+
+  attestation:
+    name: Attestation
+    uses: ./.github/workflows/test_example1.yml
+    needs: resolve-image
+    secrets: inherit
+    with:
+      # example-name: attestation
+      key_release_image: ${{ needs.resolve-image.outputs.KEY_RELEASE_IMAGE }}
+      sidecar-registry: ${{ needs.resolve-image.outputs.sidecar-registry }}
+      SKRCLIENTAKVENDPOINT: ${{ needs.resolve-image.outputs.SKRCLIENTAKVENDPOINT }}
+      TOPIC: ${{ needs.resolve-image.outputs.TOPIC }}

@@ -1,0 +1,65 @@
+name: Resolve Manifest Variables
+
+on:
+  workflow_call:
+    inputs:
+      sidecar-registry:
+        required: true
+        type: string
+        description: 1dsa
+      key_release_image:
+        type: string
+        required: false
+        default: ""
+        description: key_release_image
+      SKRCLIENTAKVENDPOINT:
+        type: string
+        required: false
+        default: ""
+        description: key_release_image
+      TOPIC:
+        type: string
+        required: false
+        default: ""
+        description: key_release_image
+
+  workflow_dispatch:
+    inputs:
+      sidecar-registry:
+        required: true
+        type: string
+        description: 1dsa
+      key_release_image:
+        type: string
+        required: false
+        default: ""
+        description: key_release_image
+      SKRCLIENTAKVENDPOINT:
+        type: string
+        required: false
+        default: ""
+        description: key_release_image
+      TOPIC:
+        type: string
+        required: false
+        default: ""
+        description: key_release_image
+
+jobs:
+  teststep:
+    name: THIS IS A TEST
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: THIS IS A TEST
+        id: resolve
+        run: |
+          echo "manifest...."
+          echo ${{ inputs.key_release_image }}
+          echo ${{ inputs.sidecar-registry }}
+          echo ${{ inputs.SKRCLIENTAKVENDPOINT }}
+          echo ${{ inputs.TOPIC }}
+        
+        

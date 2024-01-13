@@ -106,7 +106,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       KEY_RELEASE_IMAGE: ${{ steps.resolve-image.outputs.KEY_RELEASE_IMAGE }}
-      sidecar-registry: ${{ steps.resolve-image.outputs.sidecar_registry }}
+      SIDECAR_REGISTRY: ${{ steps.resolve-image.outputs.SIDECAR_REGISTRY }}
       SKRCLIENTAKVENDPOINT: ${{ steps.resolve-image.outputs.SKRCLIENTAKVENDPOINT }}
       TOPIC: ${{ steps.resolve-image.outputs.TOPIC }}
     steps:
@@ -135,7 +135,7 @@ jobs:
           echo $SKRCLIENTKID
           echo $KUBERNETESVERSION
 
-          echo "sidecar-registry=$SIDECAR_REGISTRY" >> $GITHUB_OUTPUT
+          echo "SIDECAR_REGISTRY=$SIDECAR_REGISTRY" >> $GITHUB_OUTPUT
           echo "KEY_RELEASE_IMAGE=$KEY_RELEASE_IMAGE" >> $GITHUB_OUTPUT
           echo "TOPIC=$TOPIC" >> $GITHUB_OUTPUT
           echo "SKRCLIENTAKVENDPOINT=$SKRCLIENTAKVENDPOINT" >> $GITHUB_OUTPUT
@@ -151,6 +151,6 @@ jobs:
     with:
       # example-name: attestation
       key_release_image: ${{ needs.resolve-image.outputs.KEY_RELEASE_IMAGE }}
-      sidecar-registry: ${{ needs.resolve-image.outputs.sidecar-registry }}
+      sidecar-registry: ${{ needs.resolve-image.outputs.SIDECAR_REGISTRY }}
       SKRCLIENTAKVENDPOINT: ${{ needs.resolve-image.outputs.SKRCLIENTAKVENDPOINT }}
       TOPIC: ${{ needs.resolve-image.outputs.TOPIC }}

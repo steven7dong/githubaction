@@ -171,6 +171,7 @@ jobs:
               echo "confcom extension not found. Installing confcom..."
               az extension add --name confcom
           fi
+          az extension list -o table 
 
   attestation:
     name: Attestation

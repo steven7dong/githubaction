@@ -89,6 +89,7 @@ def install_aks_preview():
         result = run_command("az extension update --name aks-preview")
         print (result)
     else: 
+        print (aks_preview_existence)
         print ("az extension ask-preview does not exist. Installing...")
         result = run_command("az extension add --name aks-preview")
         print (result)

@@ -6,14 +6,14 @@ from io import BufferedWriter
 import subprocess
 import time 
 
-CLUSTER_NAME = os.environ['CLUSTER_NAME']
-RESOURCE_GROUP = os.environ['RESOURCE_GROUP']
-LOCATION = os.environ['LOCATION']
-SERVICE_ACCOUNT_NAMESPACE = os.environ['SERVICE_ACCOUNT_NAMESPACE'] 
-SERVICE_ACCOUNT_NAME = os.environ['SERVICE_ACCOUNT_NAME']  
+# CLUSTER_NAME = os.environ['CLUSTER_NAME']
+# RESOURCE_GROUP = os.environ['RESOURCE_GROUP']
+# LOCATION = os.environ['LOCATION']
+# SERVICE_ACCOUNT_NAMESPACE = os.environ['SERVICE_ACCOUNT_NAMESPACE'] 
+# SERVICE_ACCOUNT_NAME = os.environ['SERVICE_ACCOUNT_NAME']  
 
-USER_ASSIGNED_IDENTITY_NAME = os.environ['USER_ASSIGNED_IDENTITY_NAME']
-FEDERATED_IDENTITY_CREDENTIAL_NAME = os.environ['FEDERATED_IDENTITY_CREDENTIAL_NAME']
+# USER_ASSIGNED_IDENTITY_NAME = os.environ['USER_ASSIGNED_IDENTITY_NAME']
+# FEDERATED_IDENTITY_CREDENTIAL_NAME = os.environ['FEDERATED_IDENTITY_CREDENTIAL_NAME']
 
 def enable_workload_identity_on_cluster():
     print ("checking workload identity enablement on cluster")

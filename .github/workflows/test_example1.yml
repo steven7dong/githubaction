@@ -7,17 +7,36 @@ on:
         required: true
         type: string
         description: 1dsa
-      key_release_image:
+      workload-id:
+        required: true
+        type: string
+        description: workload_id
+      key-release-image:
         type: string
         required: false
         default: ""
         description: key_release_image
-      SKRCLIENTAKVENDPOINT:
+      skr-client-akv-endpoint:
         type: string
         required: false
         default: ""
         description: key_release_image
-      TOPIC:
+      kafka-topic:
+        type: string
+        required: false
+        default: ""
+        description: key_release_image
+      kubernetes-version:
+        type: string
+        required: false
+        default: ""
+        description: key_release_image
+      skr-client-maa-endpoint: 
+        type: string
+        required: false
+        default: ""
+        description: key_release_image
+      skr-client-kid: 
         type: string
         required: false
         default: ""
@@ -29,22 +48,40 @@ on:
         required: true
         type: string
         description: 1dsa
-      key_release_image:
+      workload-id:
+        required: true
+        type: string
+        description: workload_id
+      key-release-image:
         type: string
         required: false
         default: ""
         description: key_release_image
-      SKRCLIENTAKVENDPOINT:
+      skr-client-akv-endpoint:
         type: string
         required: false
         default: ""
         description: key_release_image
-      TOPIC:
+      kafka-topic:
         type: string
         required: false
         default: ""
         description: key_release_image
-
+      kubernetes-version:
+        type: string
+        required: false
+        default: ""
+        description: key_release_image
+      skr-client-maa-endpoint: 
+        type: string
+        required: false
+        default: ""
+        description: key_release_image
+      skr-client-kid: 
+        type: string
+        required: false
+        default: ""
+        description: key_release_image
 jobs:
   teststep:
     name: THIS IS A TEST
@@ -57,9 +94,14 @@ jobs:
         id: resolve
         run: |
           echo "manifest...."
-          echo ${{ inputs.key_release_image }}
+          echo ${{ inputs.workload-id }}
+          echo ${{ inputs.key-release-image }}
           echo ${{ inputs.sidecar-registry }}
-          echo ${{ inputs.SKRCLIENTAKVENDPOINT }}
-          echo ${{ inputs.TOPIC }}
+          echo ${{ inputs.skr-client-akv-endpoint }}
+          echo ${{ inputs.skr-client-maa-endpoint }}s
+          echo ${{ inputs.skr-client-kid }}
+          echo ${{ inputs.kubernetes-version }}
+          echo ${{ inputs.kafka-topic }}
+          
         
         

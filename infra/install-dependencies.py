@@ -113,8 +113,11 @@ def install_aks_preview():
     
     release_string = "curl -LO \"https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl\""
     result = run_command(release_string)
+    print (result)
     result = subprocess.check_call("chmod +x kubectl", shell=True)
+    print (result)
     result = subprocess.check_call("sudo mv kubectl /usr/local/bin", shell=True)
+    print (result)
 
     # result = run_command("az feature register --namespace Microsoft.ContainerService --name KataCcIsolationPreview", terminate_on_command_fail=True)
     # print (result)

@@ -160,7 +160,6 @@ jobs:
     needs: [resolve-image, prepare]
     secrets: inherit
     with:
-      testName: "e2e_kafka_encryption_demo"
       workload-id: ${{ needs.prepare.outputs.id }}
       key-release-image: ${{ needs.resolve-image.outputs.KEY_RELEASE_IMAGE }}
       sidecar-registry: ${{ needs.resolve-image.outputs.SIDECAR_REGISTRY }}

@@ -1,8 +1,12 @@
-name: Resolve Manifest Variables
+name: Create AKS Cluster 
 
 on:
   workflow_call:
     inputs:
+      kubernetes-version: 
+        required: true
+        type: string
+        description: Azure AKS Kubernetes Version 
       manifest:
         required: true
         type: string
@@ -25,7 +29,49 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Create AKS Cluster 
-        id: create-aks-cluster
+      # - name: Log into Azure
+      #   run: |
+      #     az login --service-principal \
+      #       --username ${{ secrets.AZURE_SERVICE_PRINCIPAL_APP_ID }} \
+      #       --password ${{ secrets.AZURE_SERVICE_PRINCIPAL_PASSWORD }} \
+      #       --tenant ${{ secrets.AZURE_SERVICE_PRINCIPAL_TENANT }}
+
+      - name: Install Dependencies 
+        id: install-dependencies 
         run: |
-            python infra/add_security_policy_to_arm_template.py 
+          result=$(az extension list -o table  2>&1 || true)
+          if [[ $result == *"aks-preview"* ]]; then
+            echo "aks-preview already installed, upgrading aks-preview version."
+            az extension update --name aks-preview
+          else
+            echo "aks-preview extension not found. Installing aks-preview..."
+            az extension add --name aks-preview
+          fi
+      
+      - name: Test 
+        run: | 
+          random_number=$((RANDOM % 10000 + 1))
+          echo random_number 
+          echo skr-kafka-demo-${random_number}
+          echo djjkdjnska ${{ inputs.kubernetes-version }} 
+      # - name: Create AKS Cluster
+      #   run: | 
+      #     az feature register --namespace Microsoft.ContainerService --name KataCcIsolationPreview
+      #     sleep 5 
+      #     az feature show --namespace Microsoft.ContainerService --name KataCcIsolationPreview
+      #     sleep 5
+      #     az provider register --namespace Microsoft.ContainerService
+      #     sleep 5 
+
+      #     random_number=$((RANDOM % 10000 + 1))
+      #     echo skr-kafka-demo-${random_number}
+      #     # az aks create --resource-group conf-container-examples 
+      #     # --name skr-kafka-demo-${random_number}
+      #     # --kubernetes-version ${{ inputs.kubernetes-version }} 
+      #     # --os-sku AzureLinux
+      #     # --node-vm-size Standard_DC4as_cc_v5
+      #     # --enable-oidc-issuer
+      #     # --enable-workload-identity
+      #     # --workload-runtime KataCcIsolation
+      #     # --node-count 1
+      #     # --generate-ssh-keys

@@ -150,40 +150,30 @@ jobs:
       - name: Get Workflow ID
         id: generate-id
         run: echo "id=$(openssl rand -hex 8 | tr -d '\n')" >> $GITHUB_OUTPUT
-    
-      - name: Install Dependencies 
-        id: install-dependencies 
-        run: |
-          result=$(az extension list -o table  2>&1 || true)
-          if [[ $result == *"aks-preview"* ]]; then
-              echo "aks-preview already installed, upgrading aks-preview version."
-              az extension update --name aks-preview
-          else
-              echo "aks-preview extension not found. Installing aks-preview..."
-              az extension add --name aks-preview
-          fi
 
-          result=$(az extension list -o table  2>&1 || true)
-          if [[ $result == *"confcom"* ]]; then
-              echo "confcom already installed, upgrading confcom version."
-              az extension update --name confcom
-          else
-              echo "confcom extension not found. Installing confcom..."
-              az extension add --name confcom
-          fi
-          az extension list -o table 
 
-  attestation:
-    name: Attestation
-    uses: ./.github/workflows/test_example1.yml
+  create-aks-cluster: 
+    name: Create AKS Cluster
+    uses: ./.github/workflows/_create_aks_cluster.yml
     needs: [resolve-image, prepare]
     secrets: inherit
-    with:
-      workload-id: ${{ needs.prepare.outputs.id }}
-      key-release-image: ${{ needs.resolve-image.outputs.KEY_RELEASE_IMAGE }}
-      sidecar-registry: ${{ needs.resolve-image.outputs.SIDECAR_REGISTRY }}
-      kafka-topic: ${{ needs.resolve-image.outputs.KAFKA_TOPIC }}
+    with: 
       kubernetes-version: ${{ needs.resolve-image.outputs.KUBERNETES_VERSION }}
-      skr-client-akv-endpoint: ${{ needs.resolve-image.outputs.SKR_CLIENT_AKV_ENDPOINT }}
-      skr-client-maa-endpoint: ${{ needs.resolve-image.outputs.SKR_CLIENT_MAA_ENDPOINT }}
-      skr-client-kid: ${{ needs.resolve-image.outputs.SKR_CLIENT_KID }}
+    
+
+  
+
+  # attestation:
+  #   name: Attestation
+  #   uses: ./.github/workflows/test_example1.yml
+  #   needs: [resolve-image, prepare]
+  #   secrets: inherit
+  #   with:
+  #     workload-id: ${{ needs.prepare.outputs.id }}
+  #     key-release-image: ${{ needs.resolve-image.outputs.KEY_RELEASE_IMAGE }}
+  #     sidecar-registry: ${{ needs.resolve-image.outputs.SIDECAR_REGISTRY }}
+  #     kafka-topic: ${{ needs.resolve-image.outputs.KAFKA_TOPIC }}
+  #     kubernetes-version: ${{ needs.resolve-image.outputs.KUBERNETES_VERSION }}
+  #     skr-client-akv-endpoint: ${{ needs.resolve-image.outputs.SKR_CLIENT_AKV_ENDPOINT }}
+  #     skr-client-maa-endpoint: ${{ needs.resolve-image.outputs.SKR_CLIENT_MAA_ENDPOINT }}
+  #     skr-client-kid: ${{ needs.resolve-image.outputs.SKR_CLIENT_KID }}

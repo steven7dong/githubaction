@@ -165,6 +165,9 @@ jobs:
     uses: ./.github/workflows/_setup_workload_identity.yml
     needs: [resolve-image, prepare] #add create aks cluster 
     secrets: inherit 
+    with: 
+      kubernetes-version: ${{ needs.resolve-image.outputs.KUBERNETES_VERSION }}
+      cluster-name: "samplecluster"
   # attestation:
   #   name: Attestation
   #   uses: ./.github/workflows/test_example1.yml

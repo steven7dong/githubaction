@@ -152,14 +152,29 @@ jobs:
         run: echo "id=$(openssl rand -hex 8 | tr -d '\n')" >> $GITHUB_OUTPUT
 
 
-  create-aks-cluster: 
-    name: Create AKS Cluster
-    uses: ./.github/workflows/_create_aks_cluster.yml
+  # create-aks-cluster: 
+  #   name: Create AKS Cluster
+  #   uses: ./.github/workflows/_create_aks_cluster.yml
+  #   needs: [resolve-image, prepare]
+  #   secrets: inherit
+  #   with: 
+  #     kubernetes-version: ${{ needs.resolve-image.outputs.KUBERNETES_VERSION }}
+  
+  attestation:
+    name: Attestation
+    uses: ./.github/workflows/test_example1.yml
     needs: [resolve-image, prepare]
     secrets: inherit
-    with: 
+    with:
+      workload-id: ${{ needs.prepare.outputs.id }}
+      key-release-image: ${{ needs.resolve-image.outputs.KEY_RELEASE_IMAGE }}
+      sidecar-registry: ${{ needs.resolve-image.outputs.SIDECAR_REGISTRY }}
+      kafka-topic: ${{ needs.resolve-image.outputs.KAFKA_TOPIC }}
       kubernetes-version: ${{ needs.resolve-image.outputs.KUBERNETES_VERSION }}
-    
+      skr-client-akv-endpoint: ${{ needs.resolve-image.outputs.SKR_CLIENT_AKV_ENDPOINT }}
+      skr-client-maa-endpoint: ${{ needs.resolve-image.outputs.SKR_CLIENT_MAA_ENDPOINT }}
+      skr-client-kid: ${{ needs.resolve-image.outputs.SKR_CLIENT_KID }}
+
 
   
 

@@ -1,0 +1,53 @@
+name: Setup Workload Identity 
+
+on:
+  workflow_call:
+    inputs:
+      kubernetes-version: 
+        required: true
+        type: string
+        description: Azure AKS Kubernetes Version
+      cluster-name:
+        required: true
+        type: string
+        default: sameplclusternmae
+        description: Azure AKS Kubernetes Cluster Name 
+  workflow_dispatch:
+    inputs:
+      kubernetes-version:
+        required: true
+        type: string
+        description: Azure AKS Kubernetes Version
+      cluster-name:
+        required: true
+        type: string
+        description: Azure AKS Kubernetes Cluster Name 
+
+
+jobs:
+  setup-workload-identity:
+    name: Setup Workload Identity 
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Confidential Containers Demos 
+        uses: actions/checkout@v3
+        with:
+          name: microsoft/confidential-container-demos
+
+
+    #   - name: Log into Azure
+    #     run: |
+    #       az login --service-principal \
+    #         --username ${{ secrets.AZURE_SERVICE_PRINCIPAL_APP_ID }} \
+    #         --password ${{ secrets.AZURE_SERVICE_PRINCIPAL_PASSWORD }} \
+    #         --tenant ${{ secrets.AZURE_SERVICE_PRINCIPAL_TENANT }}
+            
+      - name: Install Dependencies 
+        id: install-dependencies 
+        run: |
+            curl -L https://github.com/a8m/envsubst/releases/download/v1.2.0/envsubst-`uname -s`-`uname -m` -o envsubst
+            chmod +x envsubst
+            sudo mv envsubst /usr/local/bin
+            ls
+
+      

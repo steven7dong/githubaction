@@ -102,3 +102,10 @@ jobs:
               echo "Federated identity not found. Creating... "
               az identity federated-credential create --name $FEDERATED_IDENTITY_CREDENTIAL_NAME --identity-name $USER_ASSIGNED_IDENTITY_NAME --resource-group $RESOURCE_GROUP --issuer ${AKS_OIDC_ISSUER} --subject system:serviceaccount:${SERVICE_ACCOUNT_NAMESPACE}:${SERVICE_ACCOUNT_NAME} 
           fi
+
+          kubectl create -f 'https://strimzi.io/install/latest?namespace=kafka' -n kafka 2>&1 || true 
+          # Apply the `Kafka` Cluster CR file
+          kubectl apply -f https://strimzi.io/examples/latest/kafka/kafka-persistent-single.yaml -n kafka 2>&1 || true 
+
+          echo "Sleep for 3 minute and wait for Kafka cluster to be created and fully working..."
+          sleep 180

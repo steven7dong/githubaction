@@ -49,6 +49,9 @@ jobs:
             chmod +x envsubst
             sudo mv envsubst /usr/local/bin
             envsubst version
-            
+            ls 
+            cd my-tools
+            ls
+            cd confidential-container-demos
 
       

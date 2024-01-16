@@ -7,15 +7,12 @@ on:
         required: true
         type: string
         description: Azure AKS Kubernetes Version 
-      manifest:
+  workflow_dispatch:
+    inputs:
+      kubernetes-version:
         required: true
         type: string
-        description: The Path to the Manifest File
-      modifiers:
-        type: string
-        required: false
-        default: ""
-        description: Semi colon separated key value pairs of environment variables to override
+        description: Azure AKS Kubernetes Version 
 
 
 jobs:

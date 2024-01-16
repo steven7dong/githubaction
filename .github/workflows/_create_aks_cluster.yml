@@ -16,10 +16,7 @@ on:
         required: false
         default: ""
         description: Semi colon separated key value pairs of environment variables to override
-    outputs:
-      manifest:
-        description: The manifest whith values resolved
-        value: ${{ jobs.resolve-manifest-variables.outputs.manifest }}
+
 
 jobs:
   create-aks-cluster:

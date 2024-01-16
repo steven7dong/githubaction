@@ -29,11 +29,14 @@ jobs:
     name: Setup Workload Identity 
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Confidential Containers Demos 
+      - name: Checkout
+        uses: actions/checkout@v3
+    
+      - name: Checkout tools repo 
         uses: actions/checkout@v3
         with:
           name: microsoft/confidential-container-demos
-          path: my-tools
+          path: confidential-container-demos
 
     #   - name: Log into Azure
     #     run: |
@@ -50,8 +53,9 @@ jobs:
             sudo mv envsubst /usr/local/bin
             envsubst version
             ls 
-            cd my-tools
-            ls
             cd confidential-container-demos
+            ls
+            
+    
 
       

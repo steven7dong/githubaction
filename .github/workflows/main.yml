@@ -164,18 +164,7 @@ jobs:
     name: Setup Workload Identity 
     uses: ./.github/workflows/_setup_workload_identity.yml
     needs: [resolve-image, prepare] #add create aks cluster 
-    secrets: inherit
-    with: 
-      workload-id: ${{ needs.prepare.outputs.id }}
-      key-release-image: ${{ needs.resolve-image.outputs.KEY_RELEASE_IMAGE }}
-      sidecar-registry: ${{ needs.resolve-image.outputs.SIDECAR_REGISTRY }}
-      kafka-topic: ${{ needs.resolve-image.outputs.KAFKA_TOPIC }}
-      skr-client-akv-endpoint: ${{ needs.resolve-image.outputs.SKR_CLIENT_AKV_ENDPOINT }}
-      skr-client-maa-endpoint: ${{ needs.resolve-image.outputs.SKR_CLIENT_MAA_ENDPOINT }}
-      skr-client-kid: ${{ needs.resolve-image.outputs.SKR_CLIENT_KID }}
-      #cluster-name: ${{ create-aks-cluster.outputs.cluster-name }}
-      
-
+    secrets: inherit 
   # attestation:
   #   name: Attestation
   #   uses: ./.github/workflows/test_example1.yml

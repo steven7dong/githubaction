@@ -32,12 +32,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Log into Azure
-        run: |
-          az login --service-principal \
-            --username ${{ secrets.AZURE_SERVICE_PRINCIPAL_APP_ID }} \
-            --password ${{ secrets.AZURE_SERVICE_PRINCIPAL_PASSWORD }} \
-            --tenant ${{ secrets.AZURE_SERVICE_PRINCIPAL_TENANT }}
+    #   - name: Log into Azure
+    #     run: |
+    #       az login --service-principal \
+    #         --username ${{ secrets.AZURE_SERVICE_PRINCIPAL_APP_ID }} \
+    #         --password ${{ secrets.AZURE_SERVICE_PRINCIPAL_PASSWORD }} \
+    #         --tenant ${{ secrets.AZURE_SERVICE_PRINCIPAL_TENANT }}
 
       - name: Install Dependencies 
         id: install-dependencies 

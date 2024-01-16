@@ -19,6 +19,8 @@ jobs:
   create-aks-cluster:
     name: Create AKS Cluster 
     runs-on: ubuntu-latest
+    outputs:
+      cluster-name: ${{steps.create-aks-cluster.outputs.cluster-name}}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -43,6 +45,7 @@ jobs:
           fi
 
       - name: Create AKS Cluster
+        id: create-aks-cluster
         run: | 
           az feature register --namespace Microsoft.ContainerService --name KataCcIsolationPreview
           sleep 5
@@ -53,7 +56,7 @@ jobs:
 
           random_number=$((RANDOM % 10000 + 1))
 
-          az aks create --resource-group conf-container-examples
+          az aks create --resource-group ${{ vars.RESOURCE_GROUP }}
           --name skr-kafka-demo-${random_number}
           --kubernetes-version ${{ inputs.kubernetes-version }}
           --os-sku AzureLinux
@@ -63,3 +66,5 @@ jobs:
           --workload-runtime KataCcIsolation
           --node-count 1
           --generate-ssh-keys
+          
+          echo "cluster-name=skr-kafka-demo-${random_number}" >> $GITHUB_OUTPUT

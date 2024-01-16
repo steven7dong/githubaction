@@ -167,7 +167,7 @@ jobs:
     secrets: inherit 
     with: 
       kubernetes-version: ${{ needs.resolve-image.outputs.KUBERNETES_VERSION }}
-      cluster-name: "samplecluster"
+      cluster-name: "skr-kafka-demo-test"
   # attestation:
   #   name: Attestation
   #   uses: ./.github/workflows/test_example1.yml

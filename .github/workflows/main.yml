@@ -159,14 +159,14 @@ jobs:
     with: 
       kubernetes-version: ${{ needs.resolve-image.outputs.KUBERNETES_VERSION }}
 
-  # setup-test-env: 
-  #   name: Setup Workload Identity and Kafka Cluster 
-  #   uses: ./.github/workflows/_setup_workload_identity.yml
-  #   needs: [resolve-image, prepare] #add create aks cluster 
-  #   secrets: inherit 
-  #   with: 
-  #     kubernetes-version: ${{ needs.resolve-image.outputs.KUBERNETES_VERSION }}
-  #     cluster-name: "skr-kafka-demo-test"
+  setup-test-env: 
+    name: Setup Workload Identity and Kafka Cluster 
+    uses: ./.github/workflows/_setup_workload_identity.yml
+    needs: [resolve-image, prepare] #add create aks cluster 
+    secrets: inherit 
+    with: 
+      kubernetes-version: ${{ needs.resolve-image.outputs.KUBERNETES_VERSION }}
+      cluster-name: "skr-kafka-demo-test"
 
   deploy-kafka-test: 
     name: Deploy Kafka Demo Test 

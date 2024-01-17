@@ -1,0 +1,50 @@
+name: Setup Workload Identity 
+
+on:
+  workflow_call:
+    inputs:
+      cluster-name: 
+        required: true
+        type: string
+        description: Azure AKS Kubernetes Version
+  workflow_dispatch:
+    inputs:
+       cluster-name:
+        required: true
+        type: string
+        description: Azure AKS Kubernetes Version
+
+
+jobs:
+  setup-workload-identity:
+    name: Setup Workload Identity 
+    runs-on: ubuntu-latest
+    steps:
+
+    #   - name: Log into Azure
+    #     run: |
+    #       az login --service-principal \
+    #         --username ${{ secrets.AZURE_SERVICE_PRINCIPAL_APP_ID }} \
+    #         --password ${{ secrets.AZURE_SERVICE_PRINCIPAL_PASSWORD }} \
+    #         --tenant ${{ secrets.AZURE_SERVICE_PRINCIPAL_TENANT }}
+            
+      - name: Install Dependencies 
+        id: install-dependencies 
+        run: |
+
+            curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+            chmod +x kubectl
+            sudo mv kubectl /usr/local/bin
+            kubectl version 2>&1 || true
+
+      - name: Cleanup
+        id: cleanup
+        run: | 
+          
+          kubectl delete pod kafka-producer 
+          kubectl delete pod kafka-golang-consumer 
+          kubectl -n kafka delete $(kubectl get strimzi -o name -n kafka) 2>&1 || true 
+          kubectl -n kafka delete -f 'https://strimzi.io/install/latest?namespace=kafka' 2>&1 || true 
+          kubectl delete namespace kafka  2>&1 || true
+          az aks stop --resource-group ${{ vars.RESOURCE_GROUP }} --name ${{ inputs.cluster-name}} 2>&1 || true 
+          az aks delete --resource-group ${{ vars.RESOURCE_GROUP }} --name ${{ inputs.cluster-name}} --no-wait --yes 2>&1 || true  

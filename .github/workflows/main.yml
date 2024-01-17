@@ -38,7 +38,6 @@ on:
         required: true
         default: ""
         type: string  
-
   workflow_dispatch:
     inputs:
       skr-client-maa-endpoint:
@@ -152,13 +151,13 @@ jobs:
         run: echo "id=$(openssl rand -hex 8 | tr -d '\n')" >> $GITHUB_OUTPUT
 
 
-  # create-aks-cluster: 
-  #   name: Create AKS Cluster
-  #   uses: ./.github/workflows/_create_aks_cluster.yml
-  #   needs: [resolve-image, prepare]
-  #   secrets: inherit
-  #   with: 
-  #     kubernetes-version: ${{ needs.resolve-image.outputs.KUBERNETES_VERSION }}
+  create-aks-cluster: 
+    name: Create AKS Cluster
+    uses: ./.github/workflows/_create_aks_cluster.yml
+    needs: [resolve-image, prepare]
+    secrets: inherit
+    with: 
+      kubernetes-version: ${{ needs.resolve-image.outputs.KUBERNETES_VERSION }}
 
   # setup-test-env: 
   #   name: Setup Workload Identity and Kafka Cluster 
@@ -175,30 +174,18 @@ jobs:
     needs: [resolve-image, prepare] #add create aks cluster 
     secrets: inherit 
     with: 
-      kubernetes-version: ${{ needs.resolve-image.outputs.KUBERNETES_VERSION }}
-      cluster-name: "skr-kafka-demo-test"
-  
-  # cleanup: 
-  #   name: Deploy Kafka Demo Test 
-  #   uses: ./.github/workflows/_cleanup.yml
-  #   secrets: inherit 
-  #   with: 
-  #     kubernetes-version: ${{ needs.resolve-image.outputs.KUBERNETES_VERSION }}
-  #     cluster-name: "skr-kafka-demo-test"
-  # attestation:
-  #   name: Attestation
-  #   uses: ./.github/workflows/test_example1.yml
-  #   needs: [resolve-image, prepare]
-  #   secrets: inherit
-  #   with:
-  #     workload-id: ${{ needs.prepare.outputs.id }}
-  #     key-release-image: ${{ needs.resolve-image.outputs.KEY_RELEASE_IMAGE }}
-  #     sidecar-registry: ${{ needs.resolve-image.outputs.SIDECAR_REGISTRY }}
-  #     kafka-topic: ${{ needs.resolve-image.outputs.KAFKA_TOPIC }}
-  #     kubernetes-version: ${{ needs.resolve-image.outputs.KUBERNETES_VERSION }}
-  #     skr-client-akv-endpoint: ${{ needs.resolve-image.outputs.SKR_CLIENT_AKV_ENDPOINT }}
-  #     skr-client-maa-endpoint: ${{ needs.resolve-image.outputs.SKR_CLIENT_MAA_ENDPOINT }}
-  #     skr-client-kid: ${{ needs.resolve-image.outputs.SKR_CLIENT_KID }}
+      skr-client-akv-endpoint: ${{ needs.resolve-image.outputs.SKR_CLIENT_AKV_ENDPOINT }}
+      skr-client-maa-endpoint: ${{ needs.resolve-image.outputs.SKR_CLIENT_MAA_ENDPOINT }}
+      skr-client-kid: ${{ needs.resolve-image.outputs.SKR_CLIENT_KID }}
+      kafka-topic: ${{ needs.resolve-image.outputs.KAFKA_TOPIC }}
+
+  cleanup: 
+    name: Deploy Kafka Demo Test 
+    uses: ./.github/workflows/_cleanup.yml
+    needs: [resolve-image, prepare, create-aks-cluster] #add create aks cluster 
+    secrets: inherit 
+    with: 
+      cluster-name: ${{ needs.create-aks-cluster.outputs.cluster-name}}
 
 
   

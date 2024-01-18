@@ -3,45 +3,46 @@ name: Setup Workload Identity
 on:
   workflow_call:
     inputs:
-      skr-client-akv-endpoint: 
+      skr-client-akv-endpoint:
+        description: "AKV endpoint for key release"
         required: true
         type: string
-        description: Azure AKS Kubernetes Version
       skr-client-maa-endpoint:
+        description: "Attestation endpoint"
         required: true
+        default: "sharedeus2.eus2.test.attest.azure.net"
         type: string
-        default: sameplclusternmae
-        description: Azure AKS Kubernetes Cluster Name 
-      skr-client-kid: 
+      skr-client-kid:
+        description: "Key release key id"
         required: true
+        default: "kafka-encryption-demo"
         type: string
-        description: Azure AKS Kubernetes Version
-      kafka-topic:
+      skr-kafka-demo-topic:
+        description: "Kafka topic"
         required: true
+        default: "kafka-demo-topic"
         type: string
-        default: sameplclusternmae
-        description: Azure AKS Kubernetes Cluster Name 
   workflow_dispatch:
     inputs:
       skr-client-akv-endpoint:
+        description: "AKV endpoint for key release"
         required: true
         type: string
-        description: Azure AKS Kubernetes Version
       skr-client-maa-endpoint:
+        description: "Attestation endpoint"
         required: true
+        default: "sharedeus2.eus2.test.attest.azure.net"
         type: string
-        description: Azure AKS Kubernetes Cluster Name
-      skr-client-kid: 
+      skr-client-kid:
+        description: "Key release key id"
         required: true
+        default: "kafka-encryption-demo"
         type: string
-        description: Azure AKS Kubernetes Version
-      kafka-topic:
+      skr-kafka-demo-topic:
+        description: "Kafka topic"
         required: true
+        default: "kafka-demo-topic"
         type: string
-        default: sameplclusternmae
-        description: Azure AKS Kubernetes Cluster Name 
-
-
 jobs:
   setup-workload-identity:
     name: Setup Workload Identity 

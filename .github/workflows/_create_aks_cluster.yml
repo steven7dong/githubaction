@@ -6,13 +6,13 @@ on:
       kubernetes-version: 
         required: true
         type: string
-        description: Azure AKS Kubernetes Version 
+        description: "Kubernetes version to use for AKS cluster creation"
   workflow_dispatch:
     inputs:
       kubernetes-version:
         required: true
         type: string
-        description: Azure AKS Kubernetes Version 
+        description: "Kubernetes version to use for AKS cluster creation"
 
 
 jobs:
@@ -25,12 +25,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      # - name: Log into Azure
-      #   run: |
-      #     az login --service-principal \
-      #       --username ${{ secrets.AZURE_SERVICE_PRINCIPAL_APP_ID }} \
-      #       --password ${{ secrets.AZURE_SERVICE_PRINCIPAL_PASSWORD }} \
-      #       --tenant ${{ secrets.AZURE_SERVICE_PRINCIPAL_TENANT }}
+      - name: Log into Azure
+        run: |
+          az login --service-principal \
+            --username cd2638ff-0fb5-4004-8bd3-e8a446785327 \
+            --password btB8Q~YDid12YipXoRJDk2QWOF1RAzDg4uIt3akp \
+            --tenant 72f988bf-86f1-41af-91ab-2d7cd011db47
 
       - name: Install Dependencies 
         id: install-dependencies 
@@ -47,25 +47,24 @@ jobs:
       - name: Create AKS Cluster
         id: create-aks-cluster
         run: |
-          echo ${{ inputs.kubernetes-version }}
-          # az feature register --namespace Microsoft.ContainerService --name KataCcIsolationPreview
-          # sleep 5
-          # az feature show --namespace Microsoft.ContainerService --name KataCcIsolationPreview
-          # sleep 5
-          # az provider register --namespace Microsoft.ContainerService
-          # sleep 5
+          az feature register --namespace Microsoft.ContainerService --name KataCcIsolationPreview
+          sleep 5
+          az feature show --namespace Microsoft.ContainerService --name KataCcIsolationPreview
+          sleep 5
+          az provider register --namespace Microsoft.ContainerService
+          sleep 5
 
-          # random_number=$((RANDOM % 10000 + 1))
+          random_number=$((RANDOM % 10000 + 1))
 
-          # az aks create --resource-group ${{ vars.RESOURCE_GROUP }} \
-          # --name skr-kafka-demo-${random_number} \
-          # --kubernetes-version ${{ inputs.kubernetes-version }} \
-          # --os-sku AzureLinux \
-          # --node-vm-size Standard_DC4as_cc_v5 \
-          # --enable-oidc-issuer \
-          # --enable-workload-identity \
-          # --workload-runtime KataCcIsolation \
-          # --node-count 1 \
-          # --generate-ssh-keys
+          az aks create --resource-group ${{ vars.RESOURCE_GROUP }} \
+          --name skr-kafka-demo-${random_number} \
+          --kubernetes-version ${{ inputs.kubernetes-version }} \
+          --os-sku AzureLinux \
+          --node-vm-size Standard_DC4as_cc_v5 \
+          --enable-oidc-issuer \
+          --enable-workload-identity \
+          --workload-runtime KataCcIsolation \
+          --node-count 1 \
+          --generate-ssh-keys
           
-          # echo "cluster-name=skr-kafka-demo-${random_number}" >> $GITHUB_OUTPUT
+          echo "cluster-name=skr-kafka-demo-${random_number}" >> $GITHUB_OUTPUT

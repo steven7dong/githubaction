@@ -6,7 +6,7 @@ on:
       skr-client-maa-endpoint:
         description: "Attestation endpoint"
         required: true
-        default: "uisd"
+        default: "sharedeus2.eus2.test.attest.azure.net"
         type: string
       sidecar_registry:
         description: "The registry to get the image from"
@@ -15,38 +15,34 @@ on:
         type: string
       key-release-image:
         description: "The image of the SKR sidecar to use"
-        required: false
+        required: true
         default: "aci/skr:2.7"
         type: string
       kubernetes-version:
         description: "Kubernetes version to use for AKS cluster creation"
         required: true
-        default: "1.24.0"
         type: string
       skr-client-akv-endpoint:
         description: "AKV endpoint for key release"
         required: true
-        default: ""
         type: string
       skr-kafka-demo-topic:
         description: "Kafka topic"
         required: true
-        default: "demo-topic"
+        default: "kafka-demo-topic"
         type: string  
       skr-client-kid:
         description: "Key release key id"
         required: true
-        default: ""
+        default: "kafka-encryption-demo"
         type: string  
   workflow_dispatch:
     inputs:
       skr-client-maa-endpoint:
         description: "Attestation endpoint"
         required: true
-        type: choice
-        options: 
-          - http://mcr.microsoft.com
-          - http://confidentialsidecars.azurecr.io
+        default: "sharedeus2.eus2.test.attest.azure.net"
+        type: string
       sidecar_registry:
         description: "The registry to get the image from"
         required: true
@@ -56,28 +52,26 @@ on:
           - http://confidentialsidecars.azurecr.io
       key-release-image:
         description: "The image of the SKR sidecar to use"
-        required: false
+        required: true
         default: "aci/skr:2.7"
         type: string
       kubernetes-version:
         description: "Kubernetes version to use for AKS cluster creation"
         required: true
-        default: "1.24.0"
         type: string
       skr-client-akv-endpoint:
         description: "AKV endpoint for key release"
         required: true
-        default: ""
         type: string
       skr-kafka-demo-topic:
         description: "Kafka topic"
         required: true
-        default: "demo-topic"
+        default: "kafka-demo-topic"
         type: string  
       skr-client-kid:
         description: "Key release key id"
         required: true
-        default: ""
+        default: "kafka-encryption-demo"
         type: string  
   push:
     branches:
@@ -106,7 +100,6 @@ jobs:
     outputs:
       id: ${{ steps.generate-id.outputs.id }}
     steps:
-        
       - name: Get Workflow ID
         id: generate-id
         run: echo "id=$(openssl rand -hex 8 | tr -d '\n')" >> $GITHUB_OUTPUT
@@ -120,33 +113,33 @@ jobs:
     with: 
       kubernetes-version: ${{ inputs.kubernetes-version }}
 
-  # setup-test-env: 
-  #   name: Setup Workload Identity and Kafka Cluster 
-  #   uses: ./.github/workflows/_setup_workload_identity.yml
-  #   needs: [resolve-image, prepare] #add create aks cluster 
-  #   secrets: inherit 
-  #   with: 
-  #     kubernetes-version: ${{ needs.resolve-image.outputs.KUBERNETES_VERSION }}
-  #     cluster-name: "skr-kafka-demo-test"
+  setup-test-env: 
+    name: Setup Workload Identity and Kafka Cluster 
+    uses: ./.github/workflows/_setup_workload_identity.yml
+    needs: [prepare, create-aks-cluster]
+    secrets: inherit 
+    with: 
+      kubernetes-version: ${{ inputs.kubernetes-version }}
+      cluster-name: ${{ needs.create-aks-cluster.outputs.cluster-name }}
 
   # deploy-kafka-test: 
   #   name: Deploy Kafka Demo Test 
   #   uses: ./.github/workflows/_deploy_kafka_test.yml
-  #   needs: [resolve-image, prepare] #add create aks cluster 
+  #   needs: [prepare, create-aks-cluster, setup-test-env]
   #   secrets: inherit 
   #   with: 
-  #     skr-client-akv-endpoint: ${{ needs.resolve-image.outputs.SKR_CLIENT_AKV_ENDPOINT }}
-  #     skr-client-maa-endpoint: ${{ needs.resolve-image.outputs.SKR_CLIENT_MAA_ENDPOINT }}
-  #     skr-client-kid: ${{ needs.resolve-image.outputs.SKR_CLIENT_KID }}
-  #     kafka-topic: ${{ needs.resolve-image.outputs.KAFKA_TOPIC }}
+  #     skr-client-akv-endpoint: ${{ inputs.skr-client-akv-endpoint }}
+  #     skr-client-maa-endpoint: ${{ inputs.skr-client-maa-endpoint }}
+  #     skr-client-kid: ${{ inputs.skr-client-kid }}
+  #     kafka-topic: ${{ inputs.skr-kafka-demo-topic }}
 
   # cleanup: 
   #   name: Deploy Kafka Demo Test 
   #   uses: ./.github/workflows/_cleanup.yml
-  #   needs: [resolve-image, prepare, create-aks-cluster] #add create aks cluster 
+  #   needs: [prepare, create-aks-cluster, setup-test-env, deploy-kafka-test]
   #   secrets: inherit 
   #   with: 
-  #     cluster-name: ${{ needs.create-aks-cluster.outputs.cluster-name}}
+  #     cluster-name: ${{ needs.create-aks-cluster.outputs.cluster-name }}
 
 
   

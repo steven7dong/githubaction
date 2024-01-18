@@ -46,25 +46,26 @@ jobs:
 
       - name: Create AKS Cluster
         id: create-aks-cluster
-        run: | 
-          az feature register --namespace Microsoft.ContainerService --name KataCcIsolationPreview
-          sleep 5
-          az feature show --namespace Microsoft.ContainerService --name KataCcIsolationPreview
-          sleep 5
-          az provider register --namespace Microsoft.ContainerService
-          sleep 5
+        run: |
+          echo ${{ inputs.kubernetes-version }}
+          # az feature register --namespace Microsoft.ContainerService --name KataCcIsolationPreview
+          # sleep 5
+          # az feature show --namespace Microsoft.ContainerService --name KataCcIsolationPreview
+          # sleep 5
+          # az provider register --namespace Microsoft.ContainerService
+          # sleep 5
 
-          random_number=$((RANDOM % 10000 + 1))
+          # random_number=$((RANDOM % 10000 + 1))
 
-          az aks create --resource-group ${{ vars.RESOURCE_GROUP }} \
-          --name skr-kafka-demo-${random_number} \
-          --kubernetes-version ${{ inputs.kubernetes-version }} \
-          --os-sku AzureLinux \
-          --node-vm-size Standard_DC4as_cc_v5 \
-          --enable-oidc-issuer \
-          --enable-workload-identity \
-          --workload-runtime KataCcIsolation \
-          --node-count 1 \
-          --generate-ssh-keys
+          # az aks create --resource-group ${{ vars.RESOURCE_GROUP }} \
+          # --name skr-kafka-demo-${random_number} \
+          # --kubernetes-version ${{ inputs.kubernetes-version }} \
+          # --os-sku AzureLinux \
+          # --node-vm-size Standard_DC4as_cc_v5 \
+          # --enable-oidc-issuer \
+          # --enable-workload-identity \
+          # --workload-runtime KataCcIsolation \
+          # --node-count 1 \
+          # --generate-ssh-keys
           
-          echo "cluster-name=skr-kafka-demo-${random_number}" >> $GITHUB_OUTPUT
+          # echo "cluster-name=skr-kafka-demo-${random_number}" >> $GITHUB_OUTPUT

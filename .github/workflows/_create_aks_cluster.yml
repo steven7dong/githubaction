@@ -37,7 +37,7 @@ jobs:
         run: |
           az login --service-principal \
             --username cd2638ff-0fb5-4004-8bd3-e8a446785327 \
-            --password btB8Q~YDid12YipXoRJDk2QWOF1RAzDg4uIt3akp \
+            --password ***dsudsa*** \
             --tenant 72f988bf-86f1-41af-91ab-2d7cd011db47
 
       - name: Install Dependencies 

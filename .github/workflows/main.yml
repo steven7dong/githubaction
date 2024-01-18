@@ -112,6 +112,7 @@ jobs:
     secrets: inherit
     with: 
       kubernetes-version: ${{ inputs.kubernetes-version }}
+      id: ${{ needs.prepare.outputs.id}}
 
   setup-test-env: 
     name: Setup Workload Identity and Kafka Cluster 

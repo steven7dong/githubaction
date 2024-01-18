@@ -7,12 +7,20 @@ on:
         required: true
         type: string
         description: "Kubernetes version to use for AKS cluster creation"
+      id: 
+        required: true
+        type: string
+        description: "generated id "
   workflow_dispatch:
     inputs:
       kubernetes-version:
         required: true
         type: string
         description: "Kubernetes version to use for AKS cluster creation"
+      id: 
+        required: true
+        type: string
+        description: "generated id "
 
 
 jobs:
@@ -59,7 +67,7 @@ jobs:
           # --workload-runtime KataCcIsolation \
           # --node-count 1 \
           # --generate-ssh-keys
-          echo skr-kafka-demo-${random_number}
+          echo ${{ inputs.id}}
+          echo $GITHUB_OUTPUT
           echo "cluster-name=skr-kafka-demo-${random_number}" >> $GITHUB_OUTPUT
-          echo ui: 
           echo $GITHUB_OUTPUT

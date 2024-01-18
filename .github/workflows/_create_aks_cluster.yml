@@ -61,3 +61,5 @@ jobs:
           # --generate-ssh-keys
           echo skr-kafka-demo-${random_number}
           echo "cluster-name=skr-kafka-demo-${random_number}" >> $GITHUB_OUTPUT
+          echo ui: 
+          echo $GITHUB_OUTPUT

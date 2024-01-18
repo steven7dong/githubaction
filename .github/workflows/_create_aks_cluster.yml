@@ -47,13 +47,6 @@ jobs:
       - name: Create AKS Cluster
         id: create-aks-cluster
         run: |
-          az feature register --namespace Microsoft.ContainerService --name KataCcIsolationPreview
-          sleep 5
-          az feature show --namespace Microsoft.ContainerService --name KataCcIsolationPreview
-          sleep 5
-          az provider register --namespace Microsoft.ContainerService
-          sleep 5
-
           random_number=$((RANDOM % 10000 + 1))
 
           az aks create --resource-group ${{ vars.RESOURCE_GROUP }} \

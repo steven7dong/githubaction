@@ -6,13 +6,13 @@ on:
       cluster-name: 
         required: true
         type: string
-        description: Azure AKS Kubernetes Version
+        description: Azure AKS Cluster Name
   workflow_dispatch:
     inputs:
        cluster-name:
         required: true
         type: string
-        description: Azure AKS Kubernetes Version
+        description: Azure AKS Cluster Name
 
 
 jobs:

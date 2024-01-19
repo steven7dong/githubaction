@@ -105,22 +105,22 @@ jobs:
         run: echo "id=$(openssl rand -hex 8 | tr -d '\n')" >> $GITHUB_OUTPUT
 
 
-  # create-aks-cluster: 
-  #   name: Create AKS Cluster
-  #   uses: ./.github/workflows/_create_aks_cluster.yml
-  #   needs: [prepare]
-  #   secrets: inherit
-  #   with: 
-  #     kubernetes-version: ${{ inputs.kubernetes-version }}
-
-  setup-test-env:
-    name: Setup Workload Identity and Kafka Cluster
-    uses: ./.github/workflows/_setup_workload_identity.yml
+  create-aks-cluster: 
+    name: Create AKS Cluster
+    uses: ./.github/workflows/_create_aks_cluster.yml
     needs: [prepare]
     secrets: inherit
-    with:
+    with: 
       kubernetes-version: ${{ inputs.kubernetes-version }}
-      cluster-name: ${{ needs.create-aks-cluster.outputs.cluster-name }}
+
+  # setup-test-env:
+  #   name: Setup Workload Identity and Kafka Cluster
+  #   uses: ./.github/workflows/_setup_workload_identity.yml
+  #   needs: [prepare]
+  #   secrets: inherit
+  #   with:
+  #     kubernetes-version: ${{ inputs.kubernetes-version }}
+  #     cluster-name: ${{ needs.create-aks-cluster.outputs.cluster-name }}
 
   # deploy-kafka-test: 
   #   name: Deploy Kafka Demo Test 

@@ -26,9 +26,9 @@ jobs:
       - name: Log into Azure
         run: |
           az login --service-principal \
-            --username cd2638ff-0fb5-4004-8bd3-e8a446785327 \
-            --password ***dsudsa*** \
-            --tenant 72f988bf-86f1-41af-91ab-2d7cd011db47
+          --username ${{ secrets.AZURE_SERVICE_PRINCIPAL_APP_ID }} \
+          --password ${{ secrets.AZURE_SERVICE_PRINCIPAL_PASSWORD }} \
+          --tenant ${{ secrets.AZURE_SERVICE_PRINCIPAL_TENANT }}
 
       - name: Install Dependencies 
         id: install-dependencies 

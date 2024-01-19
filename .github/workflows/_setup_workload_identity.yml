@@ -46,7 +46,7 @@ jobs:
             # sudo mv kubectl /usr/local/bin
             # kubectl version 2>&1 || true
 
-      - name: Create AKS Cluster
+      - name: Setup Workload Identity and Kafka Cluster
         env:
           SERVICE_ACCOUNT_NAMESPACE: ${{ vars.SERVICE_ACCOUNT_NAMESPACE }}
           SERVICE_ACCOUNT_NAME: ${{ vars.SERVICE_ACCOUNT_NAME }}
@@ -54,61 +54,55 @@ jobs:
           USER_ASSIGNED_IDENTITY_NAME: ${{ vars.USER_ASSIGNED_IDENTITY_NAME }}
           FEDERATED_IDENTITY_CREDENTIAL_NAME: ${{ vars.FEDERATED_IDENTITY_CREDENTIAL_NAME }}
         run: | 
-          echo $SERVICE_ACCOUNT_NAMESPACE
-          echo $SERVICE_ACCOUNT_NAME
-          echo $RESOURCE_GROUP
-          echo $USER_ASSIGNED_IDENTITY_NAME
-          echo $FEDERATED_IDENTITY_CREDENTIAL_NAME
+          az aks get-credentials --name $CLUSTER_NAME --resource-group $RESOURCE_GROUP  --overwrite-existing
+          export AKS_OIDC_ISSUER="$(az aks show -n $CLUSTER_NAME -g $RESOURCE_GROUP --query "oidcIssuerProfile.issuerUrl" -otsv)"
+          echo "Setting AKS_OIDC_ISSUER to $AKS_OIDC_ISSUER"
 
-          # az aks get-credentials --name $CLUSTER_NAME --resource-group $RESOURCE_GROUP  --overwrite-existing
-          # export AKS_OIDC_ISSUER="$(az aks show -n $CLUSTER_NAME -g $RESOURCE_GROUP --query "oidcIssuerProfile.issuerUrl" -otsv)"
-          # echo "Setting AKS_OIDC_ISSUER to $AKS_OIDC_ISSUER"
+          export SUBSCRIPTION="$(az account show --query id --output tsv)" 
+          result=$(az identity show --name $USER_ASSIGNED_IDENTITY_NAME --resource-group $RESOURCE_GROUP --subscription "${SUBSCRIPTION}" 2>&1 || true)
+          if [[ $result == *"not found"* ]]; then
+              echo "Identity $USER_ASSIGNED_IDENTITY_NAME not found. Creating... "
+              az identity create --name $USER_ASSIGNED_IDENTITY_NAME --resource-group $RESOURCE_GROUP --location eastus --subscription "${SUBSCRIPTION}" 
+          else
+              echo Identity $USER_ASSIGNED_IDENTITY_NAME already exists. 
+          fi
 
-          # export SUBSCRIPTION="$(az account show --query id --output tsv)" 
-          # result=$(az identity show --name $USER_ASSIGNED_IDENTITY_NAME --resource-group $RESOURCE_GROUP --subscription "${SUBSCRIPTION}" 2>&1 || true)
-          # if [[ $result == *"not found"* ]]; then
-          #     echo "Identity $USER_ASSIGNED_IDENTITY_NAME not found. Creating... "
-          #     az identity create --name $USER_ASSIGNED_IDENTITY_NAME --resource-group $RESOURCE_GROUP --location eastus --subscription "${SUBSCRIPTION}" 
-          # else
-          #     echo Identity $USER_ASSIGNED_IDENTITY_NAME already exists. 
-          # fi
+          export USER_ASSIGNED_CLIENT_ID="$(az identity show --resource-group $RESOURCE_GROUP --name $USER_ASSIGNED_IDENTITY_NAME --query 'clientId' -otsv)"
+          echo "Setting USER_ASSIGNED_CLIENT_ID to $USER_ASSIGNED_CLIENT_ID"
 
-          # export USER_ASSIGNED_CLIENT_ID="$(az identity show --resource-group $RESOURCE_GROUP --name $USER_ASSIGNED_IDENTITY_NAME --query 'clientId' -otsv)"
-          # echo "Setting USER_ASSIGNED_CLIENT_ID to $USER_ASSIGNED_CLIENT_ID"
+          export MANAGED_IDENTITY="$(az identity show --resource-group $RESOURCE_GROUP --name $USER_ASSIGNED_IDENTITY_NAME --query 'id' -otsv)"
+          echo "Setting MANAGED_IDENTITY to $MANAGED_IDENTITY"
 
-          # export MANAGED_IDENTITY="$(az identity show --resource-group $RESOURCE_GROUP --name $USER_ASSIGNED_IDENTITY_NAME --query 'id' -otsv)"
-          # echo "Setting MANAGED_IDENTITY to $MANAGED_IDENTITY"
+          result=$(kubectl get namespace kafka 2>&1 || true)
+          if [[ $result == *"not found"* ]]; then
+              echo "kafka namespace not found. Create kafka namespace..."
+              kubectl create namespace kafka
+          else
+              echo "kafka namespace already exists."
+          fi
 
-          # result=$(kubectl get namespace kafka 2>&1 || true)
-          # if [[ $result == *"not found"* ]]; then
-          #     echo "kafka namespace not found. Create kafka namespace..."
-          #     kubectl create namespace kafka
-          # else
-          #     echo "kafka namespace already exists."
-          # fi
+          kubectl delete sa -n ${SERVICE_ACCOUNT_NAMESPACE} ${SERVICE_ACCOUNT_NAME} 2>&1 || true
+          cat <<EOF | kubectl apply -f - 
+          apiVersion: v1 
+          kind: ServiceAccount 
+          metadata: 
+            annotations: 
+              azure.workload.identity/client-id: ${USER_ASSIGNED_CLIENT_ID} 
+            name: ${SERVICE_ACCOUNT_NAME} 
+            namespace: ${SERVICE_ACCOUNT_NAMESPACE} 
+          EOF
 
-          # kubectl delete sa -n ${SERVICE_ACCOUNT_NAMESPACE} ${SERVICE_ACCOUNT_NAME} 2>&1 || true
-          # cat <<EOF | kubectl apply -f - 
-          # apiVersion: v1 
-          # kind: ServiceAccount 
-          # metadata: 
-          #   annotations: 
-          #     azure.workload.identity/client-id: ${USER_ASSIGNED_CLIENT_ID} 
-          #   name: ${SERVICE_ACCOUNT_NAME} 
-          #   namespace: ${SERVICE_ACCOUNT_NAMESPACE} 
-          # EOF
+          result=$(az identity federated-credential show --name $FEDERATED_IDENTITY_CREDENTIAL_NAME --identity-name $USER_ASSIGNED_IDENTITY_NAME --resource-group $RESOURCE_GROUP 2>&1 || true)
+          if [[ $result == *$AKS_OIDC_ISSUER* ]]; then
+              echo "Federated identity already exists"
+          else
+              echo "Federated identity not found. Creating... "
+              az identity federated-credential create --name $FEDERATED_IDENTITY_CREDENTIAL_NAME --identity-name $USER_ASSIGNED_IDENTITY_NAME --resource-group $RESOURCE_GROUP --issuer ${AKS_OIDC_ISSUER} --subject system:serviceaccount:${SERVICE_ACCOUNT_NAMESPACE}:${SERVICE_ACCOUNT_NAME} 
+          fi
 
-          # result=$(az identity federated-credential show --name $FEDERATED_IDENTITY_CREDENTIAL_NAME --identity-name $USER_ASSIGNED_IDENTITY_NAME --resource-group $RESOURCE_GROUP 2>&1 || true)
-          # if [[ $result == *$AKS_OIDC_ISSUER* ]]; then
-          #     echo "Federated identity already exists"
-          # else
-          #     echo "Federated identity not found. Creating... "
-          #     az identity federated-credential create --name $FEDERATED_IDENTITY_CREDENTIAL_NAME --identity-name $USER_ASSIGNED_IDENTITY_NAME --resource-group $RESOURCE_GROUP --issuer ${AKS_OIDC_ISSUER} --subject system:serviceaccount:${SERVICE_ACCOUNT_NAMESPACE}:${SERVICE_ACCOUNT_NAME} 
-          # fi
+          kubectl create -f 'https://strimzi.io/install/latest?namespace=kafka' -n kafka 2>&1 || true 
+          # Apply the `Kafka` Cluster CR file
+          kubectl apply -f https://strimzi.io/examples/latest/kafka/kafka-persistent-single.yaml -n kafka 2>&1 || true 
 
-          # kubectl create -f 'https://strimzi.io/install/latest?namespace=kafka' -n kafka 2>&1 || true 
-          # # Apply the `Kafka` Cluster CR file
-          # kubectl apply -f https://strimzi.io/examples/latest/kafka/kafka-persistent-single.yaml -n kafka 2>&1 || true 
-
-          # echo "Sleep for 3 minute and wait for Kafka cluster to be created and fully working..."
-          # sleep 180
+          echo "Sleep for 3 minute and wait for Kafka cluster to be created and fully working..."
+          sleep 180

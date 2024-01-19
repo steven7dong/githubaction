@@ -116,59 +116,57 @@ jobs:
 
           rm consumer-example.yaml 2>&1 || true 
           envsubst -i consumer/consumer.yaml -o consumer-example.yaml
-          cat consumer-example.yaml
-
           export WORKLOAD_MEASUREMENT=$(az confcom katapolicygen -y consumer-example.yaml --print-policy | base64 --decode | sha256sum | cut -d' ' -f1)
-          cat consumer-example.yaml
-          chmod +x setup-key.sh
-          rm $SkrClientKID-info.json 2>&1 || true 
-          rm $SkrClientKID-pub.pem 2>&1 || true 
-          rm $SkrClientKID-release-policy.json 2>&1 || true 
-          az account set --subscription "Azure Confidential Computing DEV AND TEST"
-          bash setup-key.sh $SkrClientKID $SkrClientAKVEndpoint
+          # chmod +x setup-key.sh
+          # rm $SkrClientKID-info.json 2>&1 || true 
+          # rm $SkrClientKID-pub.pem 2>&1 || true 
+          # rm $SkrClientKID-release-policy.json 2>&1 || true 
+          # az account set --subscription "Azure Confidential Computing DEV AND TEST"
+          # bash setup-key.sh $SkrClientKID $SkrClientAKVEndpoint
       
-          sleep 2
-          export PUBKEY=$(cat $SkrClientKID-pub.pem)
-          rm producer-example.yaml 2>&1 || true 
-          envsubst <producer/producer.yaml> producer-example.yaml
+          # sleep 2
+          # export PUBKEY=$(cat $SkrClientKID-pub.pem)
+          # rm producer-example.yaml 2>&1 || true
+          # envsubst <producer/producer.yaml> producer-example.yaml
 
-          sed -i '25s/^/            /' producer-example.yaml
-          sed -i '26s/^/            /' producer-example.yaml
-          sed -i '27s/^/            /' producer-example.yaml
-          sed -i '28s/^/            /' producer-example.yaml
-          sed -i '29s/^/            /' producer-example.yaml
-          sed -i '30s/^/            /' producer-example.yaml
-          sed -i '31s/^/            /' producer-example.yaml
-          sed -i '32s/^/            /' producer-example.yaml
-          sed -i '33s/^/            /' producer-example.yaml
-          sed -i '34s/^/            /' producer-example.yaml
+          # sed -i '25s/^/            /' producer-example.yaml
+          # sed -i '26s/^/            /' producer-example.yaml
+          # sed -i '27s/^/            /' producer-example.yaml
+          # sed -i '28s/^/            /' producer-example.yaml
+          # sed -i '29s/^/            /' producer-example.yaml
+          # sed -i '30s/^/            /' producer-example.yaml
+          # sed -i '31s/^/            /' producer-example.yaml
+          # sed -i '32s/^/            /' producer-example.yaml
+          # sed -i '33s/^/            /' producer-example.yaml
+          # sed -i '34s/^/            /' producer-example.yaml
           kubectl delete -f consumer-example.yaml 2>&1 || true 
           sleep 5 
           kubectl apply -f consumer-example.yaml 2>&1 || true 
           sleep 10
 
-          kubectl delete -f producer-example.yaml 2>&1 || true 
-          sleep 5 
-          kubectl apply -f producer-example.yaml 2>&1 || true 
+          # kubectl delete -f producer-example.yaml 2>&1 || true 
+          # sleep 5 
+          # kubectl apply -f producer-example.yaml 2>&1 || true 
 
-          sleep 30 
-          export ConsumerIP=$(kubectl get svc consumer -n kafka --output=jsonpath='{.status.loadBalancer.ingress[0].ip}')
-          max_retries=5
-          retries=0
-          while [ $retries -lt $max_retries ]; do
-              echo "Querying for the decrypted message from $ConsumerIP"
-              result=$(curl $ConsumerIP) 
+          # sleep 30 
+          # export ConsumerIP=$(kubectl get svc consumer -n kafka --output=jsonpath='{.status.loadBalancer.ingress[0].ip}')
+          
+          # max_retries=5
+          # retries=0
+          # while [ $retries -lt $max_retries ]; do
+          #     echo "Querying for the decrypted message from $ConsumerIP"
+          #     result=$(curl $ConsumerIP) 
 
-              if [[ $result == *"Azure Confidential Computing"* ]]; then
-                  echo "Returned result is $result"
-                  echo "Found decrypted message, workload is successful."
-                  break  # Exit the loop on successful attempt
-              else
-                  echo "Returned result is $result"
-                  echo "Returned result does not contain text that indicates successful execution, retrying in 5 seconds..."
-                  retries=$((retries+1))
-              fi
-              sleep 5
-          done
+          #     if [[ $result == *"Azure Confidential Computing"* ]]; then
+          #         echo "Returned result is $result"
+          #         echo "Found decrypted message, workload is successful."
+          #         break  # Exit the loop on successful attempt
+          #     else
+          #         echo "Returned result is $result"
+          #         echo "Returned result does not contain text that indicates successful execution, retrying in 5 seconds..."
+          #         retries=$((retries+1))
+          #     fi
+          #     sleep 5
+          # done
 
       

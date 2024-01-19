@@ -130,7 +130,7 @@ jobs:
       skr-client-akv-endpoint: ${{ inputs.skr-client-akv-endpoint }}
       skr-client-maa-endpoint: ${{ inputs.skr-client-maa-endpoint }}
       skr-client-kid: ${{ inputs.skr-client-kid }}
-      kafka-topic: ${{ inputs.skr-kafka-demo-topic }}
+      skr-kafka-demo-topic: ${{ inputs.skr-kafka-demo-topic }}
 
   # cleanup: 
   #   name: Deploy Kafka Demo Test 

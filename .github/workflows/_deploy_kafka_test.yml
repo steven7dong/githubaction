@@ -45,7 +45,7 @@ on:
         type: string
 jobs:
   setup-workload-identity:
-    name: Setup Workload Identity 
+    name: Deploy Kafka Test
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -111,6 +111,9 @@ jobs:
           echo "TOPIC value is: $TOPIC"
 
           rm consumer-example.yaml 2>&1 || true 
+          cat consumer/consumer.yaml
+          echo "debugging"
+          
           envsubst <consumer/consumer.yaml> consumer-example.yaml 
           cat consumer-exmaple.yaml
           export WORKLOAD_MEASUREMENT=$(az confcom katapolicygen -y consumer-example.yaml -j consumer/genpolicy-debug-settings.json --print-policy | base64 --decode | sha256sum | cut -d' ' -f1)

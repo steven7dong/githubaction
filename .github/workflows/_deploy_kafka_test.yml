@@ -56,7 +56,7 @@ jobs:
       - name: Checkout tools repo 
         uses: actions/checkout@v4
         with:
-          repository: microsoft/confidential-container-demos
+          repository: stevendongatmsft/confidential-container-demos
           path: confidential-container-demos
 
       - name: Log into Azure

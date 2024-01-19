@@ -113,18 +113,18 @@ jobs:
   #   with: 
   #     kubernetes-version: ${{ inputs.kubernetes-version }}
 
-  # setup-test-env:
-  #   name: Setup Workload Identity and Kafka Cluster
-  #   uses: ./.github/workflows/_setup_workload_identity.yml
-  #   needs: [prepare]
-  #   secrets: inherit
-  #   with:
-  #     kubernetes-version: ${{ inputs.kubernetes-version }}
+  setup-test-env:
+    name: Setup Workload Identity and Kafka Cluster
+    uses: ./.github/workflows/_setup_workload_identity.yml
+    needs: [prepare]
+    secrets: inherit
+    with:
+      kubernetes-version: ${{ inputs.kubernetes-version }}
 
   deploy-kafka-test: 
     name: Deploy Kafka Demo Test 
     uses: ./.github/workflows/_deploy_kafka_test.yml
-    needs: [prepare]
+    needs: [prepare, setup-test-env]
     secrets: inherit 
     with: 
       skr-client-akv-endpoint: ${{ inputs.skr-client-akv-endpoint }}

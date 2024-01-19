@@ -115,17 +115,18 @@ jobs:
           export TOPIC=$TOPIC
 
           rm consumer-example.yaml 2>&1 || true 
-          envsubst -i consumer/consumer.yaml -o consumer-exmaple.yaml
-          ls
-          cat consumer-exmaple.yaml
-          export WORKLOAD_MEASUREMENT=$(az confcom katapolicygen -y consumer-example.yamlgs.json --print-policy | base64 --decode | sha256sum | cut -d' ' -f1)
-          
+          envsubst -i consumer/consumer.yaml -o consumer-example.yaml
+          cat consumer-example.yaml
+
+          export WORKLOAD_MEASUREMENT=$(az confcom katapolicygen -y consumer-example.yaml --print-policy | base64 --decode | sha256sum | cut -d' ' -f1)
+          cat consumer-example.yaml
           chmod +x setup-key.sh
           rm $SkrClientKID-info.json 2>&1 || true 
           rm $SkrClientKID-pub.pem 2>&1 || true 
           rm $SkrClientKID-release-policy.json 2>&1 || true 
           az account set --subscription "Azure Confidential Computing DEV AND TEST"
           bash setup-key.sh $SkrClientKID $SkrClientAKVEndpoint
+      
           sleep 2
           export PUBKEY=$(cat $SkrClientKID-pub.pem)
           rm producer-example.yaml 2>&1 || true 

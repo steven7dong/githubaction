@@ -72,8 +72,7 @@ jobs:
             curl -L https://github.com/a8m/envsubst/releases/download/v1.2.0/envsubst-`uname -s`-`uname -m` -o envsubst
             chmod +x envsubst
             sudo mv envsubst /usr/local/bin
-            ls /usr/local/bin
-            envsubst version
+            envsubst
 
             # result=$(az extension list -o table  2>&1 || true)
             # if [[ $result == *"confcom"* ]]; then
@@ -102,29 +101,29 @@ jobs:
           which envsubst
           /usr/local/bin/envsubst version 
 
-          # export CLUSTER_NAME=skr-kafka-demo-7127
-          # az aks get-credentials --name $CLUSTER_NAME --resource-group $RESOURCE_GROUP  --overwrite-existing
-          # cd confidential-container-demos/kafka
+          export CLUSTER_NAME=skr-kafka-demo-7127
+          az aks get-credentials --name $CLUSTER_NAME --resource-group $RESOURCE_GROUP  --overwrite-existing
+          cd confidential-container-demos/kafka
 
-          # SkrClientAKVEndpoint=${SkrClientAKVEndpoint#"https://"}
-          # SkrClientAKVEndpoint=${SkrClientAKVEndpoint#"http://"}
-          # export SkrClientAKVEndpoint=${SkrClientAKVEndpoint%%/*}
+          SkrClientAKVEndpoint=${SkrClientAKVEndpoint#"https://"}
+          SkrClientAKVEndpoint=${SkrClientAKVEndpoint#"http://"}
+          export SkrClientAKVEndpoint=${SkrClientAKVEndpoint%%/*}
 
-          # echo "SkrClientKID value is: $SkrClientKID"
-          # export SkrClientKID=$SkrClientKID
-          # echo "SkrClientMAAEndpoint value is: $SkrClientMAAEndpoint"
-          # export SkrClientMAAEndpoint=$SkrClientMAAEndpoint
-          # echo "SkrClientAKVEndpoint value is: $SkrClientAKVEndpoint"
-          # export SkrClientAKVEndpoint=$SkrClientAKVEndpoint
-          # echo "TOPIC value is: $TOPIC"
-          # export TOPIC=$TOPIC
-          # envsubst version
-          # rm consumer-example.yaml 2>&1 || true 
-          # cat consumer/consumer.yaml
-          # echo "debugging"
-          # ls 
-          # envsubst <consumer/consumer.yaml> consumer-example.yaml -fail-fast
-          # cat consumer-exmaple.yaml
+          echo "SkrClientKID value is: $SkrClientKID"
+          export SkrClientKID=$SkrClientKID
+          echo "SkrClientMAAEndpoint value is: $SkrClientMAAEndpoint"
+          export SkrClientMAAEndpoint=$SkrClientMAAEndpoint
+          echo "SkrClientAKVEndpoint value is: $SkrClientAKVEndpoint"
+          export SkrClientAKVEndpoint=$SkrClientAKVEndpoint
+          echo "TOPIC value is: $TOPIC"
+          export TOPIC=$TOPIC
+          envsubst version
+          rm consumer-example.yaml 2>&1 || true 
+          cat consumer/consumer.yaml
+          echo "debugging"
+          ls 
+          envsubst <consumer/consumer.yaml> consumer-example.yaml -fail-fast
+          cat consumer-exmaple.yaml
           # export WORKLOAD_MEASUREMENT=$(az confcom katapolicygen -y consumer-example.yaml -j consumer/genpolicy-debug-settings.json --print-policy | base64 --decode | sha256sum | cut -d' ' -f1)
 
           # chmod +x setup-key.sh

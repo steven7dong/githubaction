@@ -148,9 +148,9 @@ jobs:
           # sleep 5 
           # kubectl apply -f producer-example.yaml 2>&1 || true 
 
-          # sleep 30 
-          # export ConsumerIP=$(kubectl get svc consumer -n kafka --output=jsonpath='{.status.loadBalancer.ingress[0].ip}')
-          
+          sleep 30 
+          export ConsumerIP=$(kubectl get svc consumer -n kafka --output=jsonpath='{.status.loadBalancer.ingress[0].ip}')
+          echo $ConsumerIP
           # max_retries=5
           # retries=0
           # while [ $retries -lt $max_retries ]; do

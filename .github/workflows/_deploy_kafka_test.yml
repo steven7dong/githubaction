@@ -93,7 +93,7 @@ jobs:
           SKR_ClientKID : ${{ inputs.skr-client-kid }}
           SkrClientAKVEndpoint: ${{ inputs.skr-client-akv-endpoint }}
           SkrClientMAAEndpoint: ${{ inputs.skr-client-maa-endpoint }}
-          TOPIC: ${{ inputs.kafka-topic }}
+          TOPIC: ${{ inputs.skr-kafka-demo-topic }}
           RESOURCE_GROUP: ${{ vars.RESOURCE_GROUP }} 
         id: run-workload
         run: | 

@@ -116,6 +116,8 @@ jobs:
 
           rm consumer-example.yaml 2>&1 || true 
           envsubst -i consumer/consumer.yaml -o consumer-example.yaml
+          echo "Generating Security Policy for consumer"
+          cat consumer-example.yaml
           export WORKLOAD_MEASUREMENT=$(az confcom katapolicygen -y consumer-example.yaml --print-policy | base64 --decode | sha256sum | cut -d' ' -f1)
           # chmod +x setup-key.sh
           # rm $SkrClientKID-info.json 2>&1 || true 

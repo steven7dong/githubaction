@@ -132,11 +132,11 @@ jobs:
       skr-client-kid: ${{ inputs.skr-client-kid }}
       skr-kafka-demo-topic: ${{ inputs.skr-kafka-demo-topic }}
 
-  # cleanup: 
-  #   name: Deploy Kafka Demo Test 
-  #   uses: ./.github/workflows/_cleanup.yml
-  #   needs: [prepare]
-  #   secrets: inherit 
+  cleanup: 
+    name: Deploy Kafka Demo Test 
+    uses: ./.github/workflows/_cleanup.yml
+    needs: [prepare, deploy-kafka-test]
+    secrets: inherit 
 
 
   

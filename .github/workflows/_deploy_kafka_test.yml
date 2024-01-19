@@ -72,21 +72,22 @@ jobs:
             curl -L https://github.com/a8m/envsubst/releases/download/v1.2.0/envsubst-`uname -s`-`uname -m` -o envsubst
             chmod +x envsubst
             sudo mv envsubst /usr/local/bin
+            ls /usr/local/bin
             envsubst version
 
-            result=$(az extension list -o table  2>&1 || true)
-            if [[ $result == *"confcom"* ]]; then
-              echo "confcom already installed, upgrading confcom version."
-              az extension update --name confcom
-            else
-              echo "confcom extension not found. Installing confcom..."
-              az extension add --name confcom
-            fi
+            # result=$(az extension list -o table  2>&1 || true)
+            # if [[ $result == *"confcom"* ]]; then
+            #   echo "confcom already installed, upgrading confcom version."
+            #   az extension update --name confcom
+            # else
+            #   echo "confcom extension not found. Installing confcom..."
+            #   az extension add --name confcom
+            # fi
 
-            curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
-            chmod +x kubectl
-            sudo mv kubectl /usr/local/bin
-            kubectl version 2>&1 || true
+            # curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+            # chmod +x kubectl
+            # sudo mv kubectl /usr/local/bin
+            # kubectl version 2>&1 || true
 
       - name: Run Workload
         env:
@@ -97,78 +98,82 @@ jobs:
           RESOURCE_GROUP: ${{ vars.RESOURCE_GROUP }} 
         id: run-workload
         run: | 
-          export CLUSTER_NAME=skr-kafka-demo-7127
-          az aks get-credentials --name $CLUSTER_NAME --resource-group $RESOURCE_GROUP  --overwrite-existing
-          cd confidential-container-demos/kafka
+          ls /usr/local/bin
+          which envsubst
+          envsubst version 
+          kubectl version 2>&1 || true
+          # export CLUSTER_NAME=skr-kafka-demo-7127
+          # az aks get-credentials --name $CLUSTER_NAME --resource-group $RESOURCE_GROUP  --overwrite-existing
+          # cd confidential-container-demos/kafka
 
-          SkrClientAKVEndpoint=${SkrClientAKVEndpoint#"https://"}
-          SkrClientAKVEndpoint=${SkrClientAKVEndpoint#"http://"}
-          export SkrClientAKVEndpoint=${SkrClientAKVEndpoint%%/*}
+          # SkrClientAKVEndpoint=${SkrClientAKVEndpoint#"https://"}
+          # SkrClientAKVEndpoint=${SkrClientAKVEndpoint#"http://"}
+          # export SkrClientAKVEndpoint=${SkrClientAKVEndpoint%%/*}
 
-          echo "SkrClientKID value is: $SkrClientKID"
-          export SkrClientKID=$SkrClientKID
-          echo "SkrClientMAAEndpoint value is: $SkrClientMAAEndpoint"
-          export SkrClientMAAEndpoint=$SkrClientMAAEndpoint
-          echo "SkrClientAKVEndpoint value is: $SkrClientAKVEndpoint"
-          export SkrClientAKVEndpoint=$SkrClientAKVEndpoint
-          echo "TOPIC value is: $TOPIC"
-          export TOPIC=$TOPIC
-          envsubst version
-          rm consumer-example.yaml 2>&1 || true 
-          cat consumer/consumer.yaml
-          echo "debugging"
-          ls 
-          envsubst <consumer/consumer.yaml> consumer-example.yaml -fail-fast
-          cat consumer-exmaple.yaml
-          export WORKLOAD_MEASUREMENT=$(az confcom katapolicygen -y consumer-example.yaml -j consumer/genpolicy-debug-settings.json --print-policy | base64 --decode | sha256sum | cut -d' ' -f1)
+          # echo "SkrClientKID value is: $SkrClientKID"
+          # export SkrClientKID=$SkrClientKID
+          # echo "SkrClientMAAEndpoint value is: $SkrClientMAAEndpoint"
+          # export SkrClientMAAEndpoint=$SkrClientMAAEndpoint
+          # echo "SkrClientAKVEndpoint value is: $SkrClientAKVEndpoint"
+          # export SkrClientAKVEndpoint=$SkrClientAKVEndpoint
+          # echo "TOPIC value is: $TOPIC"
+          # export TOPIC=$TOPIC
+          # envsubst version
+          # rm consumer-example.yaml 2>&1 || true 
+          # cat consumer/consumer.yaml
+          # echo "debugging"
+          # ls 
+          # envsubst <consumer/consumer.yaml> consumer-example.yaml -fail-fast
+          # cat consumer-exmaple.yaml
+          # export WORKLOAD_MEASUREMENT=$(az confcom katapolicygen -y consumer-example.yaml -j consumer/genpolicy-debug-settings.json --print-policy | base64 --decode | sha256sum | cut -d' ' -f1)
 
-          chmod +x setup-key.sh
-          rm $SkrClientKID-info.json 2>&1 || true 
-          rm $SkrClientKID-pub.pem 2>&1 || true 
-          rm $SkrClientKID-release-policy.json 2>&1 || true 
-          bash setup-key.sh $SkrClientKID $SkrClientAKVEndpoint
-          sleep 2
-          export PUBKEY=$(cat $SkrClientKID-pub.pem)
-          rm producer-example.yaml 2>&1 || true 
-          envsubst <producer/producer.yaml> producer-example.yaml
+          # chmod +x setup-key.sh
+          # rm $SkrClientKID-info.json 2>&1 || true 
+          # rm $SkrClientKID-pub.pem 2>&1 || true 
+          # rm $SkrClientKID-release-policy.json 2>&1 || true 
+          # bash setup-key.sh $SkrClientKID $SkrClientAKVEndpoint
+          # sleep 2
+          # export PUBKEY=$(cat $SkrClientKID-pub.pem)
+          # rm producer-example.yaml 2>&1 || true 
+          # envsubst <producer/producer.yaml> producer-example.yaml
 
-          sed -i '25s/^/            /' producer-example.yaml
-          sed -i '26s/^/            /' producer-example.yaml
-          sed -i '27s/^/            /' producer-example.yaml
-          sed -i '28s/^/            /' producer-example.yaml
-          sed -i '29s/^/            /' producer-example.yaml
-          sed -i '30s/^/            /' producer-example.yaml
-          sed -i '31s/^/            /' producer-example.yaml
-          sed -i '32s/^/            /' producer-example.yaml
-          sed -i '33s/^/            /' producer-example.yaml
-          sed -i '34s/^/            /' producer-example.yaml
-          kubectl delete -f consumer-example.yaml 2>&1 || true 
-          sleep 5 
-          kubectl apply -f consumer-example.yaml 2>&1 || true 
-          sleep 10
+          # sed -i '25s/^/            /' producer-example.yaml
+          # sed -i '26s/^/            /' producer-example.yaml
+          # sed -i '27s/^/            /' producer-example.yaml
+          # sed -i '28s/^/            /' producer-example.yaml
+          # sed -i '29s/^/            /' producer-example.yaml
+          # sed -i '30s/^/            /' producer-example.yaml
+          # sed -i '31s/^/            /' producer-example.yaml
+          # sed -i '32s/^/            /' producer-example.yaml
+          # sed -i '33s/^/            /' producer-example.yaml
+          # sed -i '34s/^/            /' producer-example.yaml
+          # kubectl delete -f consumer-example.yaml 2>&1 || true 
+          # sleep 5 
+          # kubectl apply -f consumer-example.yaml 2>&1 || true 
+          # sleep 10
 
-          kubectl delete -f producer-example.yaml 2>&1 || true 
-          sleep 5 
-          kubectl apply -f producer-example.yaml 2>&1 || true 
+          # kubectl delete -f producer-example.yaml 2>&1 || true 
+          # sleep 5 
+          # kubectl apply -f producer-example.yaml 2>&1 || true 
 
-          sleep 30 
-          export ConsumerIP=$(kubectl get svc consumer -n kafka --output=jsonpath='{.status.loadBalancer.ingress[0].ip}')
-          max_retries=5
-          retries=0
-          while [ $retries -lt $max_retries ]; do
-              echo "Querying for the decrypted message from $ConsumerIP"
-              result=$(curl $ConsumerIP) 
+          # sleep 30 
+          # export ConsumerIP=$(kubectl get svc consumer -n kafka --output=jsonpath='{.status.loadBalancer.ingress[0].ip}')
+          # max_retries=5
+          # retries=0
+          # while [ $retries -lt $max_retries ]; do
+          #     echo "Querying for the decrypted message from $ConsumerIP"
+          #     result=$(curl $ConsumerIP) 
 
-              if [[ $result == *"Azure Confidential Computing"* ]]; then
-                  echo "Returned result is $result"
-                  echo "Found decrypted message, workload is successful."
-                  break  # Exit the loop on successful attempt
-              else
-                  echo "Returned result is $result"
-                  echo "Returned result does not contain text that indicates successful execution, retrying in 5 seconds..."
-                  retries=$((retries+1))
-              fi
-              sleep 5
-          done
+          #     if [[ $result == *"Azure Confidential Computing"* ]]; then
+          #         echo "Returned result is $result"
+          #         echo "Found decrypted message, workload is successful."
+          #         break  # Exit the loop on successful attempt
+          #     else
+          #         echo "Returned result is $result"
+          #         echo "Returned result does not contain text that indicates successful execution, retrying in 5 seconds..."
+          #         retries=$((retries+1))
+          #     fi
+          #     sleep 5
+          # done
 
       

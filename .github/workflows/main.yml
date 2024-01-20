@@ -1,4 +1,4 @@
-name: CI
+name: Kafka Demo Test 
 
 on:
   workflow_call:
@@ -119,40 +119,40 @@ jobs:
           echo ${{ inputs.skr-client-kid }}
           echo ${{ inputs.skr-kafka-demo-topic }}
 
-  create-aks-cluster: 
-    name: Create AKS Cluster
-    uses: ./.github/workflows/_create_aks_cluster.yml
-    needs: [prepare]
-    secrets: inherit
-    with: 
-      kubernetes-version: ${{ inputs.kubernetes-version }}
-
-  # setup-test-env:
-  #   name: Setup Workload Identity and Kafka Cluster
-  #   uses: ./.github/workflows/_setup_workload_identity.yml
-  #   needs: [prepare, create-aks-cluster]
+  # create-aks-cluster: 
+  #   name: Create AKS Cluster
+  #   uses: ./.github/workflows/_create_aks_cluster.yml
+  #   needs: [prepare]
   #   secrets: inherit
-  #   with:
+  #   with: 
   #     kubernetes-version: ${{ inputs.kubernetes-version }}
 
-  # deploy-kafka-test: 
-  #   name: Deploy Kafka Demo Test 
-  #   uses: ./.github/workflows/_deploy_kafka_test.yml
-  #   needs: [prepare, create-aks-cluster, setup-test-env]
-  #   secrets: inherit 
-  #   with: 
-  #     skr-client-akv-endpoint: ${{ inputs.skr-client-akv-endpoint }}
-  #     skr-client-maa-endpoint: ${{ inputs.skr-client-maa-endpoint }}
-  #     skr-client-kid: ${{ inputs.skr-client-kid }}
-  #     skr-kafka-demo-topic: ${{ inputs.skr-kafka-demo-topic }}
+  setup-test-env:
+    name: Setup Workload Identity and Kafka Cluster
+    uses: ./.github/workflows/_setup_workload_identity.yml
+    needs: [prepare]
+    secrets: inherit
+    with:
+      kubernetes-version: ${{ inputs.kubernetes-version }}
 
-  # cleanup: 
-  #   name: Deploy Kafka Demo Test 
-  #   uses: ./.github/workflows/_cleanup.yml
-  #   needs: [prepare, create-aks-cluster, setup-test-env, deploy-kafka-test]
-  #   secrets: inherit 
-  #   with: 
-  #     cluster-name: hello
+  deploy-kafka-test: 
+    name: Deploy Kafka Demo Test 
+    uses: ./.github/workflows/_deploy_kafka_test.yml
+    needs: [prepare, setup-test-env]
+    secrets: inherit 
+    with: 
+      skr-client-akv-endpoint: ${{ inputs.skr-client-akv-endpoint }}
+      skr-client-maa-endpoint: ${{ inputs.skr-client-maa-endpoint }}
+      skr-client-kid: ${{ inputs.skr-client-kid }}
+      skr-kafka-demo-topic: ${{ inputs.skr-kafka-demo-topic }}
+
+  cleanup: 
+    name: Clean Up
+    uses: ./.github/workflows/_cleanup.yml
+    needs: [prepare, setup-test-env, deploy-kafka-test]
+    secrets: inherit 
+    with: 
+      cluster-name: hello
 
 
   

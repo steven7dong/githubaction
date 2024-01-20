@@ -45,6 +45,7 @@ jobs:
       - name: Create AKS Cluster
         id: create-aks-cluster
         run: |
+
           random_number=$((RANDOM % 10000 + 1))
 
           az aks create --resource-group ${{ vars.RESOURCE_GROUP }} \

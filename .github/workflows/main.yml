@@ -104,6 +104,16 @@ jobs:
         id: generate-id
         run: echo "id=$(openssl rand -hex 8 | tr -d '\n')" >> $GITHUB_OUTPUT
 
+  just-print: 
+    name: PRINT IT OUT
+    runs-on: ubuntu-latest
+    steps:
+      - name: jdskja
+        run: | 
+          echo ${{ vars.skr-client-akv-endpoint}}
+          echo ${{ vars.skr-client-maa-endpoint }}
+          echo ${{ vars.skr-client-kid }}
+          echo ${{ vars.skr-kafka-demo-topic }}
 
   create-aks-cluster: 
     name: Create AKS Cluster

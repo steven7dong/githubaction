@@ -25,6 +25,7 @@ on:
       skr-client-akv-endpoint:
         description: "AKV endpoint for key release"
         required: true
+        default: "just-test"
         type: string
       skr-kafka-demo-topic:
         description: "Kafka topic"
@@ -62,6 +63,7 @@ on:
       skr-client-akv-endpoint:
         description: "AKV endpoint for key release"
         required: true
+        default: "just-test" 
         type: string
       skr-kafka-demo-topic:
         description: "Kafka topic"

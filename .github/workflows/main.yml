@@ -21,6 +21,7 @@ on:
       kubernetes-version:
         description: "Kubernetes version to use for AKS cluster creation"
         required: true
+        default: "1.28.3"
         type: string
       skr-client-akv-endpoint:
         description: "AKV endpoint for key release"
@@ -59,6 +60,7 @@ on:
       kubernetes-version:
         description: "Kubernetes version to use for AKS cluster creation"
         required: true
+        default: "1.28.3"
         type: string
       skr-client-akv-endpoint:
         description: "AKV endpoint for key release"
@@ -112,10 +114,10 @@ jobs:
     steps:
       - name: jdskja
         run: | 
-          echo ${{ vars.skr-client-akv-endpoint}}
-          echo ${{ vars.skr-client-maa-endpoint }}
-          echo ${{ vars.skr-client-kid }}
-          echo ${{ vars.skr-kafka-demo-topic }}
+          echo ${{ inputs.skr-client-akv-endpoint}}
+          echo ${{ inputs.skr-client-maa-endpoint }}
+          echo ${{ inputs.skr-client-kid }}
+          echo ${{ inputs.skr-kafka-demo-topic }}
 
   create-aks-cluster: 
     name: Create AKS Cluster

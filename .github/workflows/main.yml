@@ -124,7 +124,8 @@ jobs:
       - name: Decrypt Manifest
         run: |
           echo "Is this passing?"
-          echo ${{ needs.create-aks-cluster.outputs }}
+          echo ${{ join(needs.create-aks-cluster.outputs.*, '\n') }}
+
 
   # setup-test-env:
   #   name: Setup Workload Identity and Kafka Cluster

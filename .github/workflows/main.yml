@@ -124,7 +124,7 @@ jobs:
       - name: Decrypt Manifest
         run: |
           echo "Is this passing?"
-          echo ${{ join(needs.create-aks-cluster.outputs.*, '\n') }}
+          echo ${{ needs.create-aks-cluster.outputs.* }}
           echo ${{ needs.prepare.outputs.id }}
 
 

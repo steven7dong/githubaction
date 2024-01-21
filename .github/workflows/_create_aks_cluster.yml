@@ -7,12 +7,17 @@ on:
         required: true
         type: string
         description: "Kubernetes version to use for AKS cluster creation"
+    outputs:
+      cluster-name:
+        description: Cluster Name Generated
+        value: ${{ jobs.create-aks-cluster.outputs.cluster-name }}
   workflow_dispatch:
     inputs:
       kubernetes-version:
         required: true
         type: string
         description: "Kubernetes version to use for AKS cluster creation"
+    
 jobs:
   create-aks-cluster:
     name: Create AKS Cluster

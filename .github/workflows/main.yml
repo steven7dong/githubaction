@@ -115,44 +115,35 @@ jobs:
     secrets: inherit
     with: 
       kubernetes-version: ${{ inputs.kubernetes-version }}
-  
-  prepar2e:
-    name: Prepare Test
-    runs-on: ubuntu-latest
+
+  setup-test-env:
+    name: Setup Workload Identity and Kafka Cluster
+    uses: ./.github/workflows/_setup_workload_identity.yml
     needs: [prepare, create-aks-cluster]
-    steps:
-      - name: Decrypt Manifest
-        run: |
-          echo "Is this passing?"
-          echo ${{ needs.create-aks-cluster.outputs.cluster-name }}
+    secrets: inherit
+    with:
+      kubernetes-version: ${{ inputs.kubernetes-version }}
+      cluster-name: ${{ needs.create-aks-cluster.outputs.cluster-name }}
 
+  deploy-kafka-test: 
+    name: Deploy Kafka Demo Test 
+    uses: ./.github/workflows/_deploy_kafka_test.yml
+    needs: [prepare, create-aks-cluster, setup-test-env]
+    secrets: inherit 
+    with: 
+      skr-client-akv-endpoint: ${{ inputs.skr-client-akv-endpoint }}
+      skr-client-maa-endpoint: ${{ inputs.skr-client-maa-endpoint }}
+      skr-client-kid: ${{ inputs.skr-client-kid }}
+      skr-kafka-demo-topic: ${{ inputs.skr-kafka-demo-topic }}
+      cluster-name: ${{ needs.create-aks-cluster.outputs.cluster-name }}
 
-  # setup-test-env:
-  #   name: Setup Workload Identity and Kafka Cluster
-  #   uses: ./.github/workflows/_setup_workload_identity.yml
-  #   needs: [prepare, create-aks-cluster]
-  #   secrets: inherit
-  #   with:
-  #     kubernetes-version: ${{ inputs.kubernetes-version }}
-
-  # deploy-kafka-test: 
-  #   name: Deploy Kafka Demo Test 
-  #   uses: ./.github/workflows/_deploy_kafka_test.yml
-  #   needs: [prepare, create-aks-cluster, setup-test-env]
-  #   secrets: inherit 
-  #   with: 
-  #     skr-client-akv-endpoint: ${{ inputs.skr-client-akv-endpoint }}
-  #     skr-client-maa-endpoint: ${{ inputs.skr-client-maa-endpoint }}
-  #     skr-client-kid: ${{ inputs.skr-client-kid }}
-  #     skr-kafka-demo-topic: ${{ inputs.skr-kafka-demo-topic }}
-
-  # cleanup: 
-  #   name: Clean Up
-  #   uses: ./.github/workflows/_cleanup.yml
-  #   needs: [prepare, create-aks-cluster, setup-test-env, deploy-kafka-test]
-  #   secrets: inherit 
-  #   with: 
-  #     cluster-name: hello
+  cleanup: 
+    name: Clean Up
+    uses: ./.github/workflows/_cleanup.yml
+    needs: [prepare, create-aks-cluster, setup-test-env, deploy-kafka-test]
+    secrets: inherit 
+    with: 
+      cluster-name: ${{ needs.create-aks-cluster.outputs.cluster-name }}
 
 
   

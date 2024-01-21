@@ -9,7 +9,7 @@ on:
         description: "Kubernetes version to use for AKS cluster creation"
     outputs:
       cluster-name:
-        description: Cluster Name Generated
+        description: AKS Cluster Name With Randomly Generated Suffix
         value: ${{ jobs.create-aks-cluster.outputs.cluster-name }}
   workflow_dispatch:
     inputs:
@@ -53,14 +53,15 @@ jobs:
 
           random_number=$((RANDOM % 10000 + 1))
 
-          # az aks create --resource-group ${{ vars.RESOURCE_GROUP }} \
-          # --name skr-kafka-demo-${random_number} \
-          # --kubernetes-version ${{ inputs.kubernetes-version }} \
-          # --os-sku AzureLinux \
-          # --node-vm-size Standard_DC4as_cc_v5 \
-          # --enable-oidc-issuer \
-          # --enable-workload-identity \
-          # --workload-runtime KataCcIsolation \
-          # --node-count 1 \
-          # --generate-ssh-keys
+          az aks create --resource-group ${{ vars.RESOURCE_GROUP }} \
+          --name skr-kafka-demo-${random_number} \
+          --kubernetes-version ${{ inputs.kubernetes-version }} \
+          --os-sku AzureLinux \
+          --node-vm-size Standard_DC4as_cc_v5 \
+          --enable-oidc-issuer \
+          --enable-workload-identity \
+          --workload-runtime KataCcIsolation \
+          --node-count 1 \
+          --generate-ssh-keys
+          
           echo "cluster-name=skr-kafka-demo-${random_number}" >> $GITHUB_OUTPUT

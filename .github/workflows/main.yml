@@ -119,7 +119,7 @@ jobs:
   prepar2e:
     name: Prepare Test
     runs-on: ubuntu-latest
-    needs: create-aks-cluster
+    needs: [prepare, create-aks-cluster]
     steps:
       - name: Decrypt Manifest
         run: |

@@ -125,6 +125,7 @@ jobs:
         run: |
           echo "Is this passing?"
           echo ${{ join(needs.create-aks-cluster.outputs.*, '\n') }}
+          echo ${{ needs.prepare.outputs.id }}
 
 
   # setup-test-env:

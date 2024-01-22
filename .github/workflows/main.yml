@@ -137,8 +137,8 @@ jobs:
       skr-client-kid: ${{ inputs.skr-client-kid }}
       skr-kafka-demo-topic: ${{ inputs.skr-kafka-demo-topic }}
       cluster-name: ${{ needs.create-aks-cluster.outputs.cluster-name }}
-      sidecar_registry: ${{ inputs.sidecar_registry }}
-      key_release_image: ${{ inputs.key-release-image }}
+      sidecar-registry: ${{ inputs.sidecar_registry }}
+      key-release-image: ${{ inputs.key-release-image }}
   # cleanup: 
   #   name: Clean Up
   #   uses: ./.github/workflows/_cleanup.yml

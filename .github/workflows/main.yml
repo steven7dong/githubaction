@@ -82,26 +82,25 @@ on:
       - main
 
 jobs:
-  create-aks-cluster: 
-    name: Create AKS Cluster
-    uses: ./.github/workflows/_create_aks_cluster.yml
-    secrets: inherit
-    with: 
-      kubernetes-version: ${{ inputs.kubernetes-version }}
+  # create-aks-cluster: 
+  #   name: Create AKS Cluster
+  #   uses: ./.github/workflows/_create_aks_cluster.yml
+  #   secrets: inherit
+  #   with: 
+  #     kubernetes-version: ${{ inputs.kubernetes-version }}
 
-  setup-test-env:
-    name: Setup Workload Identity and Kafka Cluster
-    uses: ./.github/workflows/_setup_workload_identity.yml
-    needs: [create-aks-cluster]
-    secrets: inherit
-    with:
-      kubernetes-version: ${{ inputs.kubernetes-version }}
-      cluster-name: ${{ needs.create-aks-cluster.outputs.cluster-name }}
+  # setup-test-env:
+  #   name: Setup Workload Identity and Kafka Cluster
+  #   uses: ./.github/workflows/_setup_workload_identity.yml
+  #   needs: [create-aks-cluster]
+  #   secrets: inherit
+  #   with:
+  #     kubernetes-version: ${{ inputs.kubernetes-version }}
+  #     cluster-name: ${{ needs.create-aks-cluster.outputs.cluster-name }}
 
   deploy-kafka-test: 
     name: Deploy Kafka Demo Test 
     uses: ./.github/workflows/_deploy_kafka_test.yml
-    needs: [create-aks-cluster, setup-test-env]
     secrets: inherit 
     with: 
       skr-client-akv-endpoint: ${{ inputs.skr-client-akv-endpoint }}
@@ -112,13 +111,13 @@ jobs:
       sidecar-registry: ${{ inputs.sidecar_registry }}
       key-release-image: ${{ inputs.key-release-image }}
 
-  cleanup: 
-    name: Clean Up
-    uses: ./.github/workflows/_cleanup.yml
-    needs: [create-aks-cluster, setup-test-env, deploy-kafka-test]
-    secrets: inherit 
-    with: 
-      cluster-name: ${{ needs.create-aks-cluster.outputs.cluster-name }}
+  # cleanup: 
+  #   name: Clean Up
+  #   uses: ./.github/workflows/_cleanup.yml
+  #   needs: [create-aks-cluster, setup-test-env, deploy-kafka-test]
+  #   secrets: inherit 
+  #   with: 
+  #     cluster-name: ${{ needs.create-aks-cluster.outputs.cluster-name }}
 
 
   

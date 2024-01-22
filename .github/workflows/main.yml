@@ -77,41 +77,14 @@ on:
         required: true
         default: "kafka-encryption-demo"
         type: string  
-  push:
-    branches:
-      - main
-    paths:
-      - .github/workflows/**
-      - infra/**
-      - examples/key_release/**
-  pull_request:
-    branches:
-      - main
-    paths:
-      - .github/workflows/**
-      - infra/**
-      - examples/key_release/**
   merge_group:
     branches:
       - main
-  schedule:
-    - cron: "0 7 * * *"
 
 jobs:
-  prepare:
-    name: Prepare Test
-    runs-on: ubuntu-latest
-    outputs:
-      id: ${{ steps.generate-id.outputs.id }}
-    steps:
-      - name: Get Workflow ID
-        id: generate-id
-        run: echo "id=$(openssl rand -hex 8 | tr -d '\n')" >> $GITHUB_OUTPUT
-
   create-aks-cluster: 
     name: Create AKS Cluster
     uses: ./.github/workflows/_create_aks_cluster.yml
-    needs: [prepare]
     secrets: inherit
     with: 
       kubernetes-version: ${{ inputs.kubernetes-version }}
@@ -119,7 +92,7 @@ jobs:
   setup-test-env:
     name: Setup Workload Identity and Kafka Cluster
     uses: ./.github/workflows/_setup_workload_identity.yml
-    needs: [prepare, create-aks-cluster]
+    needs: [create-aks-cluster]
     secrets: inherit
     with:
       kubernetes-version: ${{ inputs.kubernetes-version }}
@@ -128,7 +101,7 @@ jobs:
   deploy-kafka-test: 
     name: Deploy Kafka Demo Test 
     uses: ./.github/workflows/_deploy_kafka_test.yml
-    needs: [prepare, create-aks-cluster, setup-test-env]
+    needs: [create-aks-cluster, setup-test-env]
     secrets: inherit 
     with: 
       skr-client-akv-endpoint: ${{ inputs.skr-client-akv-endpoint }}
@@ -138,11 +111,11 @@ jobs:
       cluster-name: ${{ needs.create-aks-cluster.outputs.cluster-name }}
       sidecar-registry: ${{ inputs.sidecar_registry }}
       key-release-image: ${{ inputs.key-release-image }}
-      
+
   cleanup: 
     name: Clean Up
     uses: ./.github/workflows/_cleanup.yml
-    needs: [prepare, create-aks-cluster, setup-test-env, deploy-kafka-test]
+    needs: [create-aks-cluster, setup-test-env, deploy-kafka-test]
     secrets: inherit 
     with: 
       cluster-name: ${{ needs.create-aks-cluster.outputs.cluster-name }}

@@ -120,18 +120,6 @@ def install_aks_preview():
     print (result)
     result = subprocess.check_call("sudo mv kubectl /usr/local/bin", shell=True)
     print (result)
-
-    # result = run_command("az feature register --namespace Microsoft.ContainerService --name KataCcIsolationPreview", terminate_on_command_fail=True)
-    # print (result)
-    # time.sleep(5)
-    # result = run_command("az feature show --namespace Microsoft.ContainerService --name KataCcIsolationPreview", terminate_on_command_fail=True)
-    # print (result)
-    # time.sleep(5)
-    # # Register provider
-    # result = run_command("az provider register --namespace Microsoft.ContainerService", terminate_on_command_fail=True)
-    # print (result)
-    # time.sleep(5)
-    
     
 def create_cluster(): 
     # Create AKS cluster

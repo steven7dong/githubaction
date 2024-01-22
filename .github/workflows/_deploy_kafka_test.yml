@@ -26,14 +26,14 @@ on:
         required: true
         description: AKS Cluster Name With Randomly Generated Suffix
         type: string
-      sidecar-registry:
-        required: true
-        description: "The registry to get the image from"
-        type: string
-      key-release-image: 
-        required: true 
-        description: "The image of the SKR sidecar to use"
-        type: string
+      # sidecar-registry:
+      #   required: true
+      #   description: "The registry to get the image from"
+      #   type: string
+      # key-release-image: 
+      #   required: true 
+      #   description: "The image of the SKR sidecar to use"
+      #   type: string
   workflow_dispatch:
     inputs:
       skr-client-akv-endpoint:
@@ -59,14 +59,14 @@ on:
         required: true
         description: AKS Cluster Name With Randomly Generated Suffix
         type: string
-      sidecar_registry:
-        required: true
-        description: "The registry to get the image from"
-        type: string
-      key-release-image: 
-        required: true 
-        description: "The image of the SKR sidecar to use"
-        type: string
+      # sidecar_registry:
+      #   required: true
+      #   description: "The registry to get the image from"
+      #   type: string
+      # key-release-image: 
+      #   required: true 
+      #   description: "The image of the SKR sidecar to use"
+      #   type: string
 jobs:
   setup-workload-identity:
     name: Deploy Kafka Test

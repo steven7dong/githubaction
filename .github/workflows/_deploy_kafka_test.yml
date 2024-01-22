@@ -26,7 +26,7 @@ on:
         required: true
         description: AKS Cluster Name With Randomly Generated Suffix
         type: string
-      sidecar_registry:
+      sidecar-registry:
         required: true
         description: "The registry to get the image from"
         type: string

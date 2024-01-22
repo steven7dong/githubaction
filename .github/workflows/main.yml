@@ -132,10 +132,10 @@ jobs:
     needs: [prepare]
     secrets: inherit 
     with: 
-      # skr-client-akv-endpoint: ${{ inputs.skr-client-akv-endpoint }}
-      # skr-client-maa-endpoint: ${{ inputs.skr-client-maa-endpoint }}
-      # skr-client-kid: ${{ inputs.skr-client-kid }}
-      # skr-kafka-demo-topic: ${{ inputs.skr-kafka-demo-topic }}
+      skr-client-akv-endpoint: ${{ inputs.skr-client-akv-endpoint }}
+      skr-client-maa-endpoint: ${{ inputs.skr-client-maa-endpoint }}
+      skr-client-kid: ${{ inputs.skr-client-kid }}
+      skr-kafka-demo-topic: ${{ inputs.skr-kafka-demo-topic }}
       cluster-name: ${{ needs.create-aks-cluster.outputs.cluster-name }}
       # sidecar-registry: ${{ inputs.sidecar_registry }}
       # key-release-image: ${{ inputs.key-release-image }}

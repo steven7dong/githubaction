@@ -1,4 +1,4 @@
-name: Create AKS Cluster 
+name: Create and Prepare AKS Cluster
 
 on:
   workflow_call:

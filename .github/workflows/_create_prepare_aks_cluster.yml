@@ -61,6 +61,7 @@ jobs:
 
       - name: Create AKS Cluster
         id: create-aks-cluster
+        if: steps.install-dependencies.outcome == 'success'
         env: 
           RUN_ID: ${{ steps.generate-id.outputs.id}}
         run: |
@@ -78,6 +79,7 @@ jobs:
 
       - name: Setup Workload Identity
         id: setup-workload-identity
+        if: steps.create-aks-cluster.outcome == 'success'
         env:
           CLUSTER_NAME: ${{ steps.create-aks-cluster.outputs.cluster-name}}
         run: |

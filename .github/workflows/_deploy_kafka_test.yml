@@ -3,20 +3,6 @@ name: Setup Workload Identity
 on:
   workflow_call:
     inputs:
-      skr-client-akv-endpoint:
-        description: "AKV endpoint for key release"
-        required: true
-        type: string
-      skr-client-maa-endpoint:
-        description: "Attestation endpoint"
-        required: true
-        default: "sharedeus2.eus2.test.attest.azure.net"
-        type: string
-      skr-client-kid:
-        description: "Key release key id"
-        required: true
-        default: "kafka-encryption-demo"
-        type: string
       skr-kafka-demo-topic:
         description: "Kafka topic"
         required: true
@@ -28,28 +14,23 @@ on:
         type: string
       sidecar-registry:
         required: true
+        default: "mcr.microsoft.com"
         description: "The registry to get the image from"
         type: string
       key-release-image: 
         required: true 
         description: "The image of the SKR sidecar to use"
         type: string
+      consumer-image: 
+        description: "Consumer Image"
+        required: true
+        type: string
+      producer-image: 
+        description: "Producer Image"
+        required: true
+        type: string
   workflow_dispatch:
     inputs:
-      skr-client-akv-endpoint:
-        description: "AKV endpoint for key release"
-        required: true
-        type: string
-      skr-client-maa-endpoint:
-        description: "Attestation endpoint"
-        required: true
-        default: "sharedeus2.eus2.test.attest.azure.net"
-        type: string
-      skr-client-kid:
-        description: "Key release key id"
-        required: true
-        default: "kafka-encryption-demo"
-        type: string
       skr-kafka-demo-topic:
         description: "Kafka topic"
         required: true
@@ -61,14 +42,23 @@ on:
         type: string
       sidecar_registry:
         required: true
+        default: "mcr.microsoft.com"
         description: "The registry to get the image from"
         type: string
       key-release-image: 
         required: true 
         description: "The image of the SKR sidecar to use"
         type: string
+      consumer-image: 
+        description: "Consumer Image"
+        required: true
+        type: string
+      producer-image: 
+        description: "Producer Image"
+        required: true
+        type: string
 jobs:
-  setup-workload-identity:
+  deploy-kafka:
     name: Deploy Kafka Test
     runs-on: ubuntu-latest
     steps:
@@ -76,12 +66,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: main
-    
-      - name: Checkout tools repo 
-        uses: actions/checkout@v4
-        with:
-          repository: stevendongatmsft/confidential-container-demos
-          path: confidential-container-demos
 
       - name: Log into Azure
         run: |
@@ -113,37 +97,29 @@ jobs:
 
       - name: Run Workload
         env:
-          SkrClientKID : ${{ inputs.skr-client-kid }}
-          SkrClientAKVEndpoint: ${{ inputs.skr-client-akv-endpoint }}
-          SkrClientMAAEndpoint: ${{ inputs.skr-client-maa-endpoint }}
+          SkrClientAKVEndpoint: ${{ vars.SKR_CLIENT_AKV_ENDPOINT }}
+          SkrClientMAAEndpoint: ${{ vars.SKR_CLIENT_MAA_ENDPOINT }}
           TOPIC: ${{ inputs.skr-kafka-demo-topic }}
           CLUSTER_NAME: ${{ inputs.cluster-name }}
           RESOURCE_GROUP: ${{ vars.RESOURCE_GROUP }} 
           SIDECAR_IMAGE: ${{ format('{0}/{1}', inputs.sidecar-registry, inputs.key-release-image) }}
+          CONSUMER_IMAGE: ${{ format('{0}/{1}', inputs.sidecar-registry, inputs.consumer-image) }}
+          PRODUCER_IMAGE: ${{ format('{0}/{1}', inputs.sidecar-registry, inputs.producer-image) }}
         id: run-workload
         run: | 
-         # az aks get-credentials --name $CLUSTER_NAME --resource-group $RESOURCE_GROUP  --overwrite-existing
-          ls main
-          rm confidential-container-demos/kafka/consumer/consumer.yaml
-          cp main/consumer.yaml confidential-container-demos/kafka/consumer/consumer.yaml
-          cd confidential-container-demos/kafka
-          cat consumer/consumer.yaml
-
-          # SkrClientAKVEndpoint=${SkrClientAKVEndpoint#"https://"}
-          # SkrClientAKVEndpoint=${SkrClientAKVEndpoint#"http://"}
-          # export SkrClientAKVEndpoint=${SkrClientAKVEndpoint%%/*}
-
-          # echo "SkrClientKID value is: $SkrClientKID"
-          # export SkrClientKID=$SkrClientKID
-          # echo "SkrClientMAAEndpoint value is: $SkrClientMAAEndpoint"
-          # export SkrClientMAAEndpoint=$SkrClientMAAEndpoint
-          # echo "SkrClientAKVEndpoint value is: $SkrClientAKVEndpoint"
-          # export SkrClientAKVEndpoint=$SkrClientAKVEndpoint
-          # echo "TOPIC value is: $TOPIC"
-          # export TOPIC=$TOPIC
+          echo $CLUSTER_NAME
+          echo $SkrClientAKVEndpoint
+          echo $SkrClientMAAEndpoint
+          echo $TOPIC
+          echo $RESOURCE_GROUP
+          echo $SIDECAR_IMAGE
+          echo $CONSUMER_IMAGE
+          echo $PRODUCER_IMAGE
+          # az aks get-credentials --name $CLUSTER_NAME --resource-group $RESOURCE_GROUP  --overwrite-existing
+          # cd confidential-container-demos/kafka
 
           # rm consumer-example.yaml 2>&1 || true 
-          # envsubst -i consumer/consumer.yaml -o consumer-example.yaml
+          # envsubst -i consumer/consumer-pipeline.yaml -o consumer-example.yaml
           # echo "Generating Security Policy for consumer"
           # cat consumer-example.yaml
           # export WORKLOAD_MEASUREMENT=$(az confcom katapolicygen -y consumer-example.yaml --print-policy | base64 --decode | sha256sum | cut -d' ' -f1)
@@ -177,26 +153,5 @@ jobs:
           # # kubectl delete -f producer-example.yaml 2>&1 || true 
           # # sleep 5 
           # # kubectl apply -f producer-example.yaml 2>&1 || true 
-
-          # sleep 30 
-          # export ConsumerIP=$(kubectl get svc consumer -n kafka --output=jsonpath='{.status.loadBalancer.ingress[0].ip}')
-          # echo $ConsumerIP
-          # # max_retries=5
-          # # retries=0
-          # # while [ $retries -lt $max_retries ]; do
-          # #     echo "Querying for the decrypted message from $ConsumerIP"
-          # #     result=$(curl $ConsumerIP) 
-
-          # #     if [[ $result == *"Azure Confidential Computing"* ]]; then
-          # #         echo "Returned result is $result"
-          # #         echo "Found decrypted message, workload is successful."
-          # #         break  # Exit the loop on successful attempt
-          # #     else
-          # #         echo "Returned result is $result"
-          # #         echo "Returned result does not contain text that indicates successful execution, retrying in 5 seconds..."
-          # #         retries=$((retries+1))
-          # #     fi
-          # #     sleep 5
-          # # done
 
       

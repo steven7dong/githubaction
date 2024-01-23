@@ -80,7 +80,7 @@ jobs:
       - name: Setup Workload Identity
         id: setup-workload-identity
         env:
-          CLUSTER_NAME: ${{ steps.create-aks-cluster.outputs.CLUSTER_NAME}}
+          CLUSTER_NAME: ${{ steps.create-aks-cluster.outputs.cluster-name}}
         run: |
           echo "Cluster name is "
           echo $CLUSTER_NAME

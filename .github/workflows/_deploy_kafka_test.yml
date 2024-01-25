@@ -99,7 +99,6 @@ jobs:
         env:
           AZURE_AKV_RESOURCE_ENDPOINT: ${{ secrets.SKR_CLIENT_AKV_ENDPOINT }}
           MAA_ENDPOINT: ${{ secrets.SKR_CLIENT_MAA_ENDPOINT }}
-          SkrClientKID: ${{ secrets.SKR_CLIENT_KID }}
           TOPIC: ${{ inputs.skr-kafka-demo-topic }}
           CLUSTER_NAME: ${{ inputs.cluster-name }}
           RESOURCE_GROUP: ${{ vars.RESOURCE_GROUP }} 
@@ -117,14 +116,14 @@ jobs:
           az extension list -o table 
           export WORKLOAD_MEASUREMENT=$(az confcom katapolicygen -y consumer-example.yaml --print-policy | base64 --decode | sha256sum | cut -d' ' -f1)
           chmod +x setup-key-pipeline.sh
-          rm $SkrClientKID-info.json 2>&1 || true 
-          rm $SkrClientKID-pub.pem 2>&1 || true 
-          rm $SkrClientKID-release-policy.json 2>&1 || true 
+          rm kafka-demo-pipeline-info.json 2>&1 || true 
+          rm kafka-demo-pipeline-pub.pem 2>&1 || true 
+          rm kafka-demo-pipeline-release-policy.json 2>&1 || true 
           az account set --subscription "Azure Confidential Computing DEV AND TEST"
-          bash setup-key-pipeline.sh $SkrClientKID $AZURE_AKV_RESOURCE_ENDPOINT
+          bash setup-key-pipeline.sh kafka-demo-pipeline $AZURE_AKV_RESOURCE_ENDPOINT
 
           sleep 2
-          export PUBKEY=$(cat $SkrClientKID-pub.pem)
+          export PUBKEY=$(cat kafka-demo-pipeline-pub.pem)
           rm producer-example.yaml 2>&1 || true
           envsubst -i producer/producer-pipeline.yaml -o producer-example.yaml
 

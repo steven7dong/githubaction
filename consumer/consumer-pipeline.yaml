@@ -27,7 +27,7 @@ spec:
       name: kafka-golang-consumer
       env:
         - name: SkrClientKID
-          value: $SkrClientKID
+          value: kafka-demo-pipeline
         - name: SkrClientMAAEndpoint
           value: $MAA_ENDPOINT
         - name: SkrClientAKVEndpoint

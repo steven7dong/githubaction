@@ -46,15 +46,14 @@ jobs:
         run: | 
           az aks get-credentials --name skr-kafka-demo-c20d26605c9b3da0  --resource-group $RESOURCE_GROUP  --overwrite-existing
 
-          echo "Wait for 30 sec before checking expected Kafka message."
-          sleep 30 
-          export ConsumerIP=$(kubectl get svc consumer -n kafka --output=jsonpath='{.status.loadBalancer.ingress[0].ip}')
+          echo "Wait for 20 sec before checking expected Kafka message."
+          sleep 20
 
           max_retries=5
           retries=0
           while [ $retries -lt $max_retries ]; do
               echo "Querying for the decrypted message from $ConsumerIP"
-              result=$(curl $ConsumerIP) 
+              result=$(kubectl logs -n kafka kafka-golang-consumer -c kafka-golang-consumer) 
 
               if [[ $result == *"Azure Confidential Computing"* ]]; then
                   echo "Returned result is $result"

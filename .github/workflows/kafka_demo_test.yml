@@ -68,30 +68,30 @@ on:
       - main
 
 jobs:
-  create-prepare-aks-cluster: 
-    name: Create AKS Cluster
-    uses: ./.github/workflows/_create_prepare_aks_cluster.yml
-    secrets: inherit
-    with: 
-      kubernetes-version: ${{ inputs.kubernetes-version }}
-
-  # deploy-kafka-test: 
-  #   name: Deploy Kafka Demo Test 
-  #   uses: ./.github/workflows/_deploy_kafka_test.yml
-  #   needs: [create-prepare-aks-cluster]
-  #   secrets: inherit 
+  # create-prepare-aks-cluster: 
+  #   name: Create AKS Cluster
+  #   uses: ./.github/workflows/_create_prepare_aks_cluster.yml
+  #   secrets: inherit
   #   with: 
-  #     skr-kafka-demo-topic: ${{ inputs.skr-kafka-demo-topic }}
-  #     cluster-name: ${{ needs.create-prepare-aks-cluster.outputs.cluster-name }}
-  #     sidecar-registry: ${{ inputs.sidecar-registry }}
-  #     key-release-image: ${{ inputs.key-release-image }}
-  #     consumer-image: ${{ inputs.consumer-image }}
-  #     producer-image: ${{ inputs.producer-image }}
+  #     kubernetes-version: ${{ inputs.kubernetes-version }}
+
+  deploy-kafka-test: 
+    name: Deploy Kafka Demo Test 
+    uses: ./.github/workflows/_deploy_kafka_test.yml
+    #needs: [create-prepare-aks-cluster]
+    secrets: inherit 
+    with: 
+      skr-kafka-demo-topic: ${{ inputs.skr-kafka-demo-topic }}
+      cluster-name: ${{ needs.create-prepare-aks-cluster.outputs.cluster-name }}
+      sidecar-registry: ${{ inputs.sidecar-registry }}
+      key-release-image: ${{ inputs.key-release-image }}
+      consumer-image: ${{ inputs.consumer-image }}
+      producer-image: ${{ inputs.producer-image }}
 
   # test-workload: 
   #   name: Test Workload 
   #   uses: ./.github/workflows/_test_workload.yml
-  #   needs: [create-prepare-aks-cluster, deploy-kafka-test]
+  #   needs: [deploy-kafka-test]
   #   secrets: inherit 
   #   with: 
   #     cluster-name: ${{ needs.create-aks-cluster.outputs.cluster-name }}

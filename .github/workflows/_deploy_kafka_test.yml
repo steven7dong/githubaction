@@ -97,8 +97,9 @@ jobs:
 
       - name: Run Workload
         env:
-          SkrClientAKVEndpoint: ${{ vars.SKR_CLIENT_AKV_ENDPOINT }}
-          SkrClientMAAEndpoint: ${{ vars.SKR_CLIENT_MAA_ENDPOINT }}
+          AZURE_AKV_RESOURCE_ENDPOINT: ${{ secrets.SKR_CLIENT_AKV_ENDPOINT }}
+          MAA_ENDPOINT: ${{ secrets.SKR_CLIENT_MAA_ENDPOINT }}
+          SkrClientKID: ${{ secrets.SKR_CLIENT_KID }}
           TOPIC: ${{ inputs.skr-kafka-demo-topic }}
           CLUSTER_NAME: ${{ inputs.cluster-name }}
           RESOURCE_GROUP: ${{ vars.RESOURCE_GROUP }} 
@@ -107,43 +108,54 @@ jobs:
           PRODUCER_IMAGE: ${{ format('{0}/{1}', inputs.sidecar-registry, inputs.producer-image) }}
         id: run-workload
         run: | 
-          az aks get-credentials --name $CLUSTER_NAME --resource-group $RESOURCE_GROUP  --overwrite-existing
-          cd confidential-container-demos/kafka
+          
+          echo $AZURE_AKV_RESOURCE_ENDPOINT
+          echo $MAA_ENDPOINT
+          echo $SkrClientKID
+          echo $TOPIC
+          echo $CLUSTER_NAME
+          echo $RESOURCE_GROUP 
+          echo $SIDECAR_IMAGE
+          echo $CONSUMER_IMAGE
+          echo $PRODUCER_IMAGE
+          az aks get-credentials --name skr-kafka-demo-c20d26605c9b3da0  --resource-group $RESOURCE_GROUP  --overwrite-existing
+          ls 
+          #cd confidential-container-demos/kafka
 
           rm consumer-example.yaml 2>&1 || true 
           envsubst -i consumer/consumer-pipeline.yaml -o consumer-example.yaml
           echo "Generating Security Policy for consumer"
           cat consumer-example.yaml
           export WORKLOAD_MEASUREMENT=$(az confcom katapolicygen -y consumer-example.yaml --print-policy | base64 --decode | sha256sum | cut -d' ' -f1)
-          # chmod +x setup-key.sh
-          # rm $SkrClientKID-info.json 2>&1 || true 
-          # rm $SkrClientKID-pub.pem 2>&1 || true 
-          # rm $SkrClientKID-release-policy.json 2>&1 || true 
-          # az account set --subscription "Azure Confidential Computing DEV AND TEST"
-          # bash setup-key.sh $SkrClientKID $SkrClientAKVEndpoint
-      
-          # sleep 2
-          # export PUBKEY=$(cat $SkrClientKID-pub.pem)
-          # rm producer-example.yaml 2>&1 || true
-          # envsubst <producer/producer.yaml> producer-example.yaml
+          chmod +x setup-key-pipeline.sh
+          rm $SkrClientKID-info.json 2>&1 || true 
+          rm $SkrClientKID-pub.pem 2>&1 || true 
+          rm $SkrClientKID-release-policy.json 2>&1 || true 
+          az account set --subscription "Azure Confidential Computing DEV AND TEST"
+          bash setup-key-pipeline.sh $SkrClientKID $AZURE_AKV_RESOURCE_ENDPOINT
 
-          # sed -i '25s/^/            /' producer-example.yaml
-          # sed -i '26s/^/            /' producer-example.yaml
-          # sed -i '27s/^/            /' producer-example.yaml
-          # sed -i '28s/^/            /' producer-example.yaml
-          # sed -i '29s/^/            /' producer-example.yaml
-          # sed -i '30s/^/            /' producer-example.yaml
-          # sed -i '31s/^/            /' producer-example.yaml
-          # sed -i '32s/^/            /' producer-example.yaml
-          # sed -i '33s/^/            /' producer-example.yaml
-          # sed -i '34s/^/            /' producer-example.yaml
+          sleep 2
+          export PUBKEY=$(cat $SkrClientKID-pub.pem)
+          rm producer-example.yaml 2>&1 || true
+          envsubst -i producer/producer-pipeline.yaml -o producer-example.yaml
+
+          sed -i '25s/^/            /' producer-example.yaml
+          sed -i '26s/^/            /' producer-example.yaml
+          sed -i '27s/^/            /' producer-example.yaml
+          sed -i '28s/^/            /' producer-example.yaml
+          sed -i '29s/^/            /' producer-example.yaml
+          sed -i '30s/^/            /' producer-example.yaml
+          sed -i '31s/^/            /' producer-example.yaml
+          sed -i '32s/^/            /' producer-example.yaml
+          sed -i '33s/^/            /' producer-example.yaml
+          sed -i '34s/^/            /' producer-example.yaml
           kubectl delete -f consumer-example.yaml 2>&1 || true 
           sleep 5 
           kubectl apply -f consumer-example.yaml 2>&1 || true 
           sleep 10
 
-          # kubectl delete -f producer-example.yaml 2>&1 || true 
-          # sleep 5 
-          # kubectl apply -f producer-example.yaml 2>&1 || true 
+          kubectl delete -f producer-example.yaml 2>&1 || true 
+          sleep 5 
+          kubectl apply -f producer-example.yaml 2>&1 || true 
 
       

@@ -108,20 +108,8 @@ jobs:
           PRODUCER_IMAGE: ${{ format('{0}/{1}', inputs.sidecar-registry, inputs.producer-image) }}
         id: run-workload
         run: | 
-          
-          echo $AZURE_AKV_RESOURCE_ENDPOINT
-          echo $MAA_ENDPOINT
-          echo $SkrClientKID
-          echo $TOPIC
-          echo $CLUSTER_NAME
-          echo $RESOURCE_GROUP 
-          echo $SIDECAR_IMAGE
-          echo $CONSUMER_IMAGE
-          echo $PRODUCER_IMAGE
           az aks get-credentials --name skr-kafka-demo-c20d26605c9b3da0  --resource-group $RESOURCE_GROUP  --overwrite-existing
-          ls 
-          #cd confidential-container-demos/kafka
-
+          cd main
           rm consumer-example.yaml 2>&1 || true 
           envsubst -i consumer/consumer-pipeline.yaml -o consumer-example.yaml
           echo "Generating Security Policy for consumer"

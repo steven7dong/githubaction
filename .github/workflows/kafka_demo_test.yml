@@ -88,13 +88,13 @@ jobs:
       consumer-image: ${{ inputs.consumer-image }}
       producer-image: ${{ inputs.producer-image }}
 
-  # test-workload: 
-  #   name: Test Workload 
-  #   uses: ./.github/workflows/_test_workload.yml
-  #   needs: [deploy-kafka-test]
-  #   secrets: inherit 
-  #   with: 
-  #     cluster-name: ${{ needs.create-aks-cluster.outputs.cluster-name }}
+  test-workload: 
+    name: Test Workload 
+    uses: ./.github/workflows/_test_workload.yml
+    needs: [deploy-kafka-test]
+    secrets: inherit 
+    with: 
+      cluster-name: ${{ needs.create-aks-cluster.outputs.cluster-name }}
 
   # cleanup: 
   #   name: Clean Up

@@ -65,17 +65,18 @@ jobs:
         env: 
           RUN_ID: ${{ steps.generate-id.outputs.id}}
         run: |
-          az aks create --resource-group ${{ vars.RESOURCE_GROUP }} \
-          --name skr-kafka-demo-${RUN_ID} \
-          --kubernetes-version ${{ inputs.kubernetes-version }} \
-          --os-sku AzureLinux \
-          --node-vm-size Standard_DC4as_cc_v5 \
-          --enable-oidc-issuer \
-          --enable-workload-identity \
-          --workload-runtime KataCcIsolation \
-          --node-count 1 \
-          --generate-ssh-keys
-          echo "cluster-name=skr-kafka-demo-${RUN_ID}" >> $GITHUB_OUTPUT
+          echo $RUN_ID
+          # az aks create --resource-group ${{ vars.RESOURCE_GROUP }} \
+          # --name skr-kafka-demo-${RUN_ID} \
+          # --kubernetes-version ${{ inputs.kubernetes-version }} \
+          # --os-sku AzureLinux \
+          # --node-vm-size Standard_DC4as_cc_v5 \
+          # --enable-oidc-issuer \
+          # --enable-workload-identity \
+          # --workload-runtime KataCcIsolation \
+          # --node-count 1 \
+          # --generate-ssh-keys
+          # echo "cluster-name=skr-kafka-demo-${RUN_ID}" >> $GITHUB_OUTPUT
 
       - name: Setup Workload Identity
         id: setup-workload-identity
@@ -83,11 +84,12 @@ jobs:
         env:
           CLUSTER_NAME: ${{ steps.create-aks-cluster.outputs.cluster-name}}
         run: |
-          az aks get-credentials --name $CLUSTER_NAME --resource-group $RESOURCE_GROUP  --overwrite-existing
-          export AKS_OIDC_ISSUER="$(az aks show -n $CLUSTER_NAME -g $RESOURCE_GROUP --query "oidcIssuerProfile.issuerUrl" -otsv)"
-          echo "Setting AKS_OIDC_ISSUER to $AKS_OIDC_ISSUER"\
+          az aks get-credentials --name skr-kafka-demo-c20d26605c9b3da0 --resource-group $RESOURCE_GROUP  --overwrite-existing
+          export AKS_OIDC_ISSUER="$(az aks show -n skr-kafka-demo-c20d26605c9b3da0 -g $RESOURCE_GROUP --query "oidcIssuerProfile.issuerUrl" -otsv)"
+          echo "Setting AKS_OIDC_ISSUER to $AKS_OIDC_ISSUER"
 
-          export APPLICATION_OBJECT_ID="$(az ad app list --display-name accct-aks-demos-builds-sp --query '[0].id' -otsv)"
+          export USER_ASSIGNED_CLIENT_ID="$(az identity show --resource-group $RESOURCE_GROUP --name $USER_ASSIGNED_IDENTITY_NAME --query 'clientId' -otsv)"
+          echo "Setting USER_ASSIGNED_CLIENT_ID to $USER_ASSIGNED_CLIENT_ID"
 
           result=$(kubectl get namespace kafka 2>&1 || true)
           if [[ $result == *"not found"* ]]; then
@@ -103,40 +105,18 @@ jobs:
           kind: ServiceAccount 
           metadata: 
             annotations: 
-              azure.workload.identity/client-id: cd2638ff-0fb5-4004-8bd3-e8a446785327
-            name: workload-identity-sa
-            namespace: kafka
+              azure.workload.identity/client-id: ${USER_ASSIGNED_CLIENT_ID}
+            name: workload-identity-sa 
+            namespace: kafka 
           EOF
 
-          cat <<EOF > params.json
-          {
-            "name": "kubernetes-federated-identity",
-            "issuer": "${AKS_OIDC_ISSUER}",
-            "subject": "system:serviceaccount:kafka:workload-identity-sa",
-            "description": "Kubernetes service account federated identity",
-            "audiences": [
-              "api://AzureADTokenExchange"
-            ]
-          }
-          EOF
-
-          az ad app federated-credential create --id $APPLICATION_OBJECT_ID --parameters params.json
-
-          # export USER_ASSIGNED_CLIENT_ID="$(az identity show --resource-group $RESOURCE_GROUP --name $USER_ASSIGNED_IDENTITY_NAME --query 'clientId' -otsv)"
-          # echo "Setting USER_ASSIGNED_CLIENT_ID to $USER_ASSIGNED_CLIENT_ID"
-
-          # export MANAGED_IDENTITY="$(az identity show --resource-group $RESOURCE_GROUP --name $USER_ASSIGNED_IDENTITY_NAME --query 'id' -otsv)"
-          # echo "Setting MANAGED_IDENTITY to $MANAGED_IDENTITY"
-
-          
-
-          # result=$(az identity federated-credential show --name myFedIdentity --identity-name $USER_ASSIGNED_IDENTITY_NAME --resource-group $RESOURCE_GROUP 2>&1 || true)
-          # if [[ $result == *$AKS_OIDC_ISSUER* ]]; then
-          #     echo "Federated identity already exists"
-          # else
-          #     echo "Federated identity not found. Creating... "
-          #     az identity federated-credential create --name myFedIdentity --identity-name $USER_ASSIGNED_IDENTITY_NAME --resource-group $RESOURCE_GROUP --issuer ${AKS_OIDC_ISSUER} --subject system:serviceaccount:${SERVICE_ACCOUNT_NAMESPACE}:${SERVICE_ACCOUNT_NAME} 
-          # fi
+          result=$(az identity federated-credential show --name myFedIdentity --identity-name $USER_ASSIGNED_IDENTITY_NAME --resource-group $RESOURCE_GROUP 2>&1 || true)
+          if [[ $result == *$AKS_OIDC_ISSUER* ]]; then
+              echo "Federated identity already exists"
+          else
+              echo "Federated identity not found. Creating... "
+              az identity federated-credential create --name myFedIdentity --identity-name $USER_ASSIGNED_IDENTITY_NAME --resource-group $RESOURCE_GROUP --issuer ${AKS_OIDC_ISSUER} --subject system:serviceaccount:kafka:workload-identity-sa
+          fi
 
           kubectl create -f 'https://strimzi.io/install/latest?namespace=kafka' -n kafka 2>&1 || true 
           # Apply the `Kafka` Cluster CR file
@@ -144,5 +124,3 @@ jobs:
 
           echo "Sleep for 3 minute and wait for Kafka cluster to be created and fully working..."
           sleep 180
-
-

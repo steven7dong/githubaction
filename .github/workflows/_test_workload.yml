@@ -38,7 +38,7 @@ jobs:
             sudo mv kubectl /usr/local/bin
             kubectl version 2>&1 || true
 
-      - name: test-workload
+      - name: Test Workload
         env:
           CLUSTER_NAME: ${{ inputs.cluster-name }}
           RESOURCE_GROUP: ${{ vars.RESOURCE_GROUP }} 

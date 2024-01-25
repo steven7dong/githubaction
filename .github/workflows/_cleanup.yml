@@ -1,4 +1,4 @@
-name: Setup Workload Identity 
+name: Cleanup
 
 on:
   workflow_call:
@@ -17,7 +17,7 @@ on:
 
 jobs:
   setup-workload-identity:
-    name: Setup Workload Identity 
+    name: Cleanup
     runs-on: ubuntu-latest
     steps:
 
@@ -52,6 +52,6 @@ jobs:
           kubectl -n kafka delete -f 'https://strimzi.io/install/latest?namespace=kafka' 2>&1 || true 
           sleep 30 
           kubectl delete namespace kafka  2>&1 || true
-          az aks stop --resource-group ${{ vars.RESOURCE_GROUP }} --name $CLUSTER_NAME 2>&1
+          az aks stop --resource-group ${{ vars.RESOURCE_GROUP }} --name skr-kafka-demo-c20d26605c9b3da0 2>&1
           sleep 30 
-          az aks delete --resource-group ${{ vars.RESOURCE_GROUP }} --name $CLUSTER_NAME --no-wait --yes
+          az aks delete --resource-group ${{ vars.RESOURCE_GROUP }} --name skr-kafka-demo-c20d26605c9b3da0 --no-wait --yes

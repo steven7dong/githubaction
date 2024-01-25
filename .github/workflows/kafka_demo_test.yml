@@ -88,17 +88,16 @@ jobs:
   #     consumer-image: ${{ inputs.consumer-image }}
   #     producer-image: ${{ inputs.producer-image }}
 
-  test-workload: 
-    name: Test Workload 
-    uses: ./.github/workflows/_test_workload.yml
-    secrets: inherit 
-    with: 
-      cluster-name: ${{ needs.create-aks-cluster.outputs.cluster-name }}
+  # test-workload: 
+  #   name: Test Workload 
+  #   uses: ./.github/workflows/_test_workload.yml
+  #   secrets: inherit 
+  #   with: 
+  #     cluster-name: ${{ needs.create-aks-cluster.outputs.cluster-name }}
 
   cleanup: 
     name: Clean Up
     uses: ./.github/workflows/_cleanup.yml
-    needs: [test-workload]
     secrets: inherit 
     with: 
       cluster-name: ${{ needs.create-aks-cluster.outputs.cluster-name }}

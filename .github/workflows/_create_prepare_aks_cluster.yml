@@ -70,6 +70,7 @@ jobs:
           --kubernetes-version ${{ inputs.kubernetes-version }} \
           --os-sku AzureLinux \
           --node-vm-size Standard_DC4as_cc_v5 \
+          --tags --tags "Owner=accct" \
           --enable-oidc-issuer \
           --enable-workload-identity \
           --workload-runtime KataCcIsolation \

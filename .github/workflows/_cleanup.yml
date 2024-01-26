@@ -52,7 +52,6 @@ jobs:
           # kubectl -n kafka delete -f 'https://strimzi.io/install/latest?namespace=kafka' 2>&1 || true 
           # sleep 30 
           # kubectl delete namespace kafka  2>&1 || true
-          az aks stop --resource-group ${{ vars.RESOURCE_GROUP }} --name $CLUSTER_NAME 2>&1
           sleep 30 
           
           max_retries=5
@@ -64,6 +63,7 @@ jobs:
               if [[ $result == *"Succeeded"* ]]; then
                   echo "Returned result is $result"
                   echo "Cluster is ready to be deleted."
+                  az aks stop --resource-group ${{ vars.RESOURCE_GROUP }} --name $CLUSTER_NAME 2>&1
                   az aks delete --resource-group ${{ vars.RESOURCE_GROUP }} --name $CLUSTER_NAME --no-wait --yes
                   break  # Exit the loop on successful attempt
               else

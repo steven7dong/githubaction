@@ -65,7 +65,7 @@ on:
         type: string  
   merge_group:
     branches:
-      - main
+      - kafka-demo-pipeline
 
 jobs:
   create-prepare-aks-cluster: 

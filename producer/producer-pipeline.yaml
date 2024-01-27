@@ -10,7 +10,7 @@ metadata:
   namespace: kafka
 spec:
   containers:
-    - image: "mcr.microsoft.com/acc/samples/kafka/producer:1.0"
+    - image: $PRODUCER_IMAGE
       name: kafka-producer
       command:
         - /produce

@@ -40,8 +40,8 @@ jobs:
           while [ $retries -lt $max_retries ]; do
               echo "Querying for the decrypted message from $ConsumerIP"
               result=$(az aks show -g conf-container-examples -n $CLUSTER_NAME --query 'provisioningState' -otsv) 
-              # Checking cluster state to be succeeded before initiate delete operation
-              # Deleting a cluster in provisioning state results in CLI command error
+              # Checking cluster state to be succeeded before initiating delete operation
+              # Deleting a cluster in provisioning state results in CLI command error and dangling cluster 
               if [[ $result == *"Succeeded"* ]]; then
                   echo "Returned result is $result"
                   echo "Cluster is ready to be deleted."

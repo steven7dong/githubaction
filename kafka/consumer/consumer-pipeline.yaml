@@ -33,7 +33,7 @@ spec:
         - name: SkrClientAKVEndpoint
           value: $AZURE_AKV_RESOURCE_ENDPOINT
         - name: TOPIC
-          value: $TOPIC
+          value: kafka-demo-topic
       command:
         - /consume
       ports:

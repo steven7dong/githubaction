@@ -16,7 +16,7 @@ spec:
         - /produce
       env:
         - name: TOPIC
-          value: $TOPIC
+          value: kafka-demo-topic
         - name: MSG
           value: "Azure Confidential Computing"
         - name: PUBKEY

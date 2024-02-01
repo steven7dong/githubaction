@@ -60,27 +60,27 @@ jobs:
             echo "producer-image=${{ inputs.producer-image }}" >> $GITHUB_OUTPUT
           fi
 
-  create-aks-cluster:
-    name: Create AKS Cluster
-    needs: [prepare]
-    uses: ./.github/workflows/_create_aks_cluster.yml
-    secrets: inherit
+  # create-aks-cluster:
+  #   name: Create AKS Cluster
+  #   needs: [prepare]
+  #   uses: ./.github/workflows/_create_aks_cluster.yml
+  #   secrets: inherit
   
   setup-aks-cluster:
     name: Setup AKS Cluster
-    needs: [prepare, create-aks-cluster]
+    needs: [prepare]
     uses: ./.github/workflows/_setup_aks_cluster.yml
     secrets: inherit
     with: 
-      cluster-name: ${{ needs.create-aks-cluster.outputs.cluster-name }}
+      cluster-name: skr-kafka-demo-106b52774b54506f
  
   deploy-kafka-test: 
     name: Deploy Kafka Demo Test 
     uses: ./.github/workflows/_deploy_kafka_test.yml
-    needs: [prepare, create-aks-cluster, setup-aks-cluster]
+    needs: [prepare, setup-aks-cluster]
     secrets: inherit 
     with: 
-      cluster-name: ${{ needs.create-aks-cluster.outputs.cluster-name }}
+      cluster-name: skr-kafka-demo-106b52774b54506f
       key-release-image: ${{ needs.prepare.outputs.key-release-image }}
       consumer-image: ${{ needs.prepare.outputs.consumer-image }}
       producer-image: ${{ needs.prepare.outputs.producer-image }}
@@ -88,10 +88,10 @@ jobs:
   test-workload: 
     name: Test Workload 
     uses: ./.github/workflows/_test_workload.yml
-    needs: [prepare, create-aks-cluster, setup-aks-cluster, deploy-kafka-test]
+    needs: [prepare, setup-aks-cluster, deploy-kafka-test]
     secrets: inherit 
     with: 
-      cluster-name: ${{ needs.create-aks-cluster.outputs.cluster-name }}
+      cluster-name: skr-kafka-demo-106b52774b54506f
 
   # cleanup: 
   #   name: Clean Up

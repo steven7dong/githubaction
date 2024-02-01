@@ -72,6 +72,8 @@ jobs:
         id: create-service-account
         if: steps.create-kafka-namespace.outcome == 'success'
         run: |
+          echo "user assigned client id is "
+          echo $USER_ASSIGNED_CLIENT_ID
           kubectl delete sa -n kafka workload-identity-sa 2>&1 || true
           cat <<EOF | kubectl apply -f - 
           apiVersion: v1 
@@ -87,6 +89,11 @@ jobs:
         id: setup-workload-identity
         if: steps.create-service-account.outcome == 'success'
         run: |
+          echo "user assigned identity name "
+          echo $USER_ASSIGNED_IDENTITY_NAME
+          echo "resource group"
+          echo $RESOURCE_GROUP
+          echo $AKS_OIDC_ISSUER
           result=$(az identity federated-credential show --name myFedIdentity --identity-name $USER_ASSIGNED_IDENTITY_NAME --resource-group $RESOURCE_GROUP 2>&1 || true)
           if [[ $result == *$AKS_OIDC_ISSUER* ]]; then
               echo "Federated identity already exists"

@@ -55,6 +55,9 @@ jobs:
 
           export USER_ASSIGNED_CLIENT_ID="$(az identity show --resource-group $RESOURCE_GROUP --name $USER_ASSIGNED_IDENTITY_NAME --query 'clientId' -otsv)"
           echo "Setting USER_ASSIGNED_CLIENT_ID to $USER_ASSIGNED_CLIENT_ID"
+
+          echo "AKS_OIDC_ISSUER=$AKS_OIDC_ISSUER" >> $GITHUB_OUTPUT
+          echo "USER_ASSIGNED_CLIENT_ID=$USER_ASSIGNED_CLIENT_ID" >> $GITHUB_OUTPUT
         
       - name: Create Kafka Namespace 
         id: create-kafka-namespace
@@ -80,7 +83,7 @@ jobs:
           kind: ServiceAccount 
           metadata: 
             annotations: 
-              azure.workload.identity/client-id: ${USER_ASSIGNED_CLIENT_ID}
+              azure.workload.identity/client-id: ${{ steps.prepare-workload-identity-env-vars.outputs.USER_ASSIGNED_CLIENT_ID }}
             name: workload-identity-sa 
             namespace: kafka 
           EOF
@@ -89,17 +92,12 @@ jobs:
         id: setup-workload-identity
         if: steps.create-service-account.outcome == 'success'
         run: |
-          echo "user assigned identity name "
-          echo $USER_ASSIGNED_IDENTITY_NAME
-          echo "resource group"
-          echo $RESOURCE_GROUP
-          echo $AKS_OIDC_ISSUER
           result=$(az identity federated-credential show --name myFedIdentity --identity-name $USER_ASSIGNED_IDENTITY_NAME --resource-group $RESOURCE_GROUP 2>&1 || true)
-          if [[ $result == *$AKS_OIDC_ISSUER* ]]; then
+          if [[ $result == *${{ steps.prepare-workload-identity-env-vars.outputs.AKS_OIDC_ISSUER }}* ]]; then
               echo "Federated identity already exists"
           else
               echo "Federated identity not found. Creating... "
-              az identity federated-credential create --name myFedIdentity --identity-name $USER_ASSIGNED_IDENTITY_NAME --resource-group $RESOURCE_GROUP --issuer ${AKS_OIDC_ISSUER} --subject system:serviceaccount:kafka:workload-identity-sa
+              az identity federated-credential create --name myFedIdentity --identity-name $USER_ASSIGNED_IDENTITY_NAME --resource-group $RESOURCE_GROUP --issuer ${{ steps.prepare-workload-identity-env-vars.outputs.AKS_OIDC_ISSUER }} --subject system:serviceaccount:kafka:workload-identity-sa
           fi
           
       - name: Setup Kafka Cluster 
